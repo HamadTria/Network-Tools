@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import os
 
 config = configparser.ConfigParser()
-config_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage M1/code/APP/data/config.ini')
+config_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage M1/code/Network-Tools/data/config.ini')
 config.read(config_path)
 
 app = Dash(__name__,

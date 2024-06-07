@@ -2,7 +2,7 @@ import os
 import math
 import pandas as pd
 
-csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage M1/code/APP/data/EdgeList.csv')
+csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage M1/code/Network-Tools/data/EdgeList.csv')
 df = pd.read_csv(csv_path, sep=";", header = None)
 
 nodes = set()

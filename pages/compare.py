@@ -3,6 +3,7 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_cytoscape as cyto
 from view import navbar
+import time
 
 register_page(__name__)
 
@@ -20,6 +21,7 @@ def layout():
 
     nav_bar = navbar.draw_navbar()
 
+    start = time.time()
     cytograph = html.Div([
                     cyto.Cytoscape(
                             id='cytoscape-graph',
@@ -66,6 +68,14 @@ def layout():
                             ]
                         )
                 ])
+    
+    end = time.time()
+    time_taken = (end - start) * 1000
+    time_text = html.P(f"Time taken: {time_taken:.2}ms", 
+                       style={"position": "absolute", "bottom": "10px", 
+                              "left": "10px", "color": "#FFFFFF", 
+                              "fontSize": "0.8rem"})
+    cytograph.children.append(time_text)
     
     card_content_cyto = [
         dbc.CardHeader([
@@ -154,7 +164,21 @@ clientside_callback(
 
         s.graph.read(graphData);
 
+        let start = Date.now();
+
         s.refresh();
+
+        let timeTaken = Date.now() - start;
+
+        // Print the time taken to render the graph
+        let timeText = document.createElement("p");
+        timeText.innerText = "Time taken: " + timeTaken + "ms";
+        timeText.style.position = "absolute";
+        timeText.style.bottom = "10px";
+        timeText.style.left = "10px";
+        timeText.style.color = "#FFFFFF";
+        timeText.style.fontSize = "0.8rem";
+        container.appendChild(timeText);
     }
     """,
     Output("dummy-output-compare", "children"),
