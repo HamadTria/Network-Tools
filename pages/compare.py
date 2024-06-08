@@ -8,6 +8,8 @@ import time
 register_page(__name__)
 
 def layout():
+    nav_bar = navbar.draw_navbar()
+
     card_style = {
         "margin": "1rem",
         "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
@@ -19,63 +21,10 @@ def layout():
         "color": "#FFFFFF",
     }
 
-    nav_bar = navbar.draw_navbar()
-
-    start = time.time()
     cytograph = html.Div([
-                    cyto.Cytoscape(
-                            id='cytoscape-graph',
-                            style={'width': '100%', 'height': '500px'},
-                            elements=[
-                                {'data': {'id': 'n0', 'label': 'Node A'}, 'position': {'x': 0, 'y': 0}},
-                                {'data': {'id': 'n1', 'label': 'Node B'}, 'position': {'x': 300, 'y': 100}},
-                                {'data': {'id': 'n2', 'label': 'Node C'}, 'position': {'x': 100, 'y': 300}},
-                                {'data': {'id': 'n3', 'label': 'Node D'}, 'position': {'x': 400, 'y': 200}},
-                                {'data': {'id': 'n4', 'label': 'Node E'}, 'position': {'x': 200, 'y': 400}},
-                                {'data': {'id': 'n5', 'label': 'Node F'}, 'position': {'x': 300, 'y': 300}},
-                                {'data': {'id': 'n6', 'label': 'Node G'}, 'position': {'x': 0, 'y': 500}},
-                                {'data': {'id': 'n7', 'label': 'Node H'}, 'position': {'x': 400, 'y': 400}},
-                                {'data': {'id': 'n8', 'label': 'Node I'}, 'position': {'x': 500, 'y': 100}},
-                                {'data': {'source': 'n0', 'target': 'n1'}},
-                                {'data': {'source': 'n1', 'target': 'n2'}},
-                                {'data': {'source': 'n2', 'target': 'n0'}},
-                                {'data': {'source': 'n1', 'target': 'n3'}},
-                                {'data': {'source': 'n3', 'target': 'n4'}},
-                                {'data': {'source': 'n4', 'target': 'n5'}},
-                                {'data': {'source': 'n5', 'target': 'n6'}},
-                                {'data': {'source': 'n6', 'target': 'n7'}},
-                                {'data': {'source': 'n7', 'target': 'n8'}},
-                                {'data': {'source': 'n8', 'target': 'n0'}}
-                            ],
-                            layout={'name': 'preset'},
-                            stylesheet=[
-                                {
-                                    'selector': 'node',
-                                    'style': {
-                                        'background-color': '#75abd2',
-                                        'label': 'data(label)',
-                                        'color': '#fff',
-                                    }
-                                },
-                                {
-                                    'selector': 'edge',
-                                    'style': {
-                                        'line-color': '#75abd2',
-                                        'target-arrow-color': '#75abd2',
-                                        'source-arrow-color': '#75abd2'
-                                    }
-                                }
-                            ]
-                        )
-                ])
-    
-    end = time.time()
-    time_taken = (end - start) * 1000
-    time_text = html.P(f"Time taken: {time_taken:.2}ms", 
-                       style={"position": "absolute", "bottom": "10px", 
-                              "left": "10px", "color": "#FFFFFF", 
-                              "fontSize": "0.8rem"})
-    cytograph.children.append(time_text)
+                    html.Div(id="cytos-compare"),
+                    html.Div(id="cyto-container-compare", style={"width": "100%", "height": "500px"})
+    ])
     
     card_content_cyto = [
         dbc.CardHeader([
@@ -91,7 +40,7 @@ def layout():
     ]
 
     sigma = html.Div([
-        html.Div(id="dummy-output-compare"),
+        html.Div(id="sigma-compare"),
         html.Div(id="sigma-container-compare", style={"width": "100%", "height": "500px"}),
     ])
 
@@ -123,6 +72,9 @@ def layout():
 clientside_callback(
     """
     function() {
+
+        let start = Date.now();
+
         var container = document.getElementById('sigma-container-compare');
 
         while (container.firstChild) {
@@ -164,8 +116,6 @@ clientside_callback(
 
         s.graph.read(graphData);
 
-        let start = Date.now();
-
         s.refresh();
 
         let timeTaken = Date.now() - start;
@@ -181,6 +131,82 @@ clientside_callback(
         container.appendChild(timeText);
     }
     """,
-    Output("dummy-output-compare", "children"),
-    Input("dummy-output-compare", "children")
+    Output("sigma-compare", "children"),
+    Input("sigma-compare", "children"),
+)
+
+clientside_callback(
+    """
+    function initializeCytoscape() {
+        
+        let start = Date.now();
+
+        var cy = window.cy = cytoscape({
+            container: document.getElementById('cyto-container-compare'),
+            ready: function(){
+            },
+            style: [
+						{
+							selector: 'node',
+							css: {
+								'content': 'data(label)',
+                                'background-color': '#75abd2',
+                                'color': '#fff',
+                            }
+						},
+
+						{
+							selector: 'edge',
+							css: {
+								'curve-style': 'bezier',
+								'target-arrow-shape': 'triangle'
+                                
+							}
+						}
+					],
+                                        
+			layout: {name: 'preset'},
+                                        
+            elements: {
+						nodes: [
+                                {'data': {'id': 'n0', 'label': 'Node A'}, 'position': {'x': 0, 'y': 0}},
+                                {'data': {'id': 'n1', 'label': 'Node B'}, 'position': {'x': 300, 'y': 100}},
+                                {'data': {'id': 'n2', 'label': 'Node C'}, 'position': {'x': 100, 'y': 300}},
+                                {'data': {'id': 'n3', 'label': 'Node D'}, 'position': {'x': 400, 'y': 200}},
+                                {'data': {'id': 'n4', 'label': 'Node E'}, 'position': {'x': 200, 'y': 400}},
+                                {'data': {'id': 'n5', 'label': 'Node F'}, 'position': {'x': 300, 'y': 300}},
+                                {'data': {'id': 'n6', 'label': 'Node G'}, 'position': {'x': 0, 'y': 500}},
+                                {'data': {'id': 'n7', 'label': 'Node H'}, 'position': {'x': 400, 'y': 400}},
+                                {'data': {'id': 'n8', 'label': 'Node I'}, 'position': {'x': 500, 'y': 100}},
+						],
+						edges: [
+                                {'data': {'source': 'n0', 'target': 'n1'}},
+                                {'data': {'source': 'n1', 'target': 'n2'}},
+                                {'data': {'source': 'n2', 'target': 'n0'}},
+                                {'data': {'source': 'n1', 'target': 'n3'}},
+                                {'data': {'source': 'n3', 'target': 'n4'}},
+                                {'data': {'source': 'n4', 'target': 'n5'}},
+                                {'data': {'source': 'n5', 'target': 'n6'}},
+                                {'data': {'source': 'n6', 'target': 'n7'}},
+                                {'data': {'source': 'n7', 'target': 'n8'}},
+                                {'data': {'source': 'n8', 'target': 'n0'}}
+						]
+					}
+        });
+
+        let timeTaken = Date.now() - start;
+
+        // Print the time taken to render the graph
+        let timeText = document.createElement("p");
+        timeText.innerText = "Time taken: " + timeTaken + "ms";
+        timeText.style.position = "absolute";
+        timeText.style.bottom = "10px";
+        timeText.style.left = "10px";
+        timeText.style.color = "#FFFFFF";
+        timeText.style.fontSize = "0.8rem";
+        document.getElementById('cyto-container-compare').appendChild(timeText);
+    }
+    """,
+    Output("cytos-compare", "children"),
+    Input("cytos-compare", "children"),
 )
