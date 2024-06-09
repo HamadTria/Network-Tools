@@ -1,6 +1,6 @@
 import json
+import dash
 from dash import Input, Output, State, dcc, html, callback, register_page
-
 import dash_cytoscape as cyto
 import dash_bootstrap_components as dbc
 from view import dash_reusable_components as drc
