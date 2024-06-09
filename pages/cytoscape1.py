@@ -18,6 +18,7 @@ def layout():
 
 clientside_callback(
     """
+    
     function initializeCytoscape() {
         var cy = window.cy = cytoscape({
             container: document.getElementById('cyto-container'),
@@ -40,6 +41,12 @@ clientside_callback(
                     css: {
                         'curve-style': 'bezier',
                         'target-arrow-shape': 'triangle'
+                    }
+                },
+                {
+                selector: 'node:selected',
+                    css: {
+                        'background-color': '#4c7dab'
                     }
                 }
             ],
@@ -77,7 +84,6 @@ clientside_callback(
                 {
                     content: 'change size',
                     select: function(ele){
-						console.log(ele.style('width'));
 						if (ele.style('width') === '100') {
 							ele.animate({
 								style: { 'width': '50px', 'height': '50px' }
@@ -92,17 +98,41 @@ clientside_callback(
                 {
                     content: 'isolate node',
                     select: function(ele){
-                        cy.elements().not(ele).not(ele.connectedEdges()).hide();
+                        let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
+                        if (cy.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
+                            cy.elements().not(connectedNodesAndEdges).show();
+                            cy.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+                        } else {
+                            cy.elements().not(connectedNodesAndEdges).hide();
+                            cy.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+                        }
                     }
                 },
                 {
 					content: 'change shape',
 					select: function(ele){
-						if (ele.style('shape') === 'star') {
+						if (ele.style('shape') === 'square') {
 							ele.style('shape', 'ellipse');
 						} else {
-							ele.style('shape', 'star');
+							ele.style('shape', 'square');
 						}
+					}
+                },
+                {
+					content: 'mark node',
+					select: function(ele){
+						if (ele.style('background-color') === 'rgb(255,0,0)') {
+                            ele.style('background-color', '#75abd2');
+                        } else {
+                            ele.style('background-color', 'red');
+                        }
+                    }
+                },
+                {
+                    content: 'delete',
+                    select: function(ele){
+                        ele.hide();
+                        ele.style('visibility', 'hidden');
 					}
                 },
             ]
@@ -121,6 +151,13 @@ clientside_callback(
                     content: 'bg2',
                     select: function(){
                         cy.style().selector('node').style('background-color', '#d275ab').update();
+                    }
+                },
+                {
+                    content: 'bring back nodes',
+                    select: function(){
+                        cy.elements().show();
+                        cy.elements().style('visibility', 'visible');
                     }
                 }
             ]
