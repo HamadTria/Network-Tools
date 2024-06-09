@@ -2,20 +2,51 @@ import json
 from dash import Input, Output, State, dcc, html, callback, register_page
 
 import dash_cytoscape as cyto
+import dash_bootstrap_components as dbc
 from view import dash_reusable_components as drc
 from view import navbar
 from data import cytoData
-
 
 cyto.load_extra_layouts()
 
 register_page(__name__)
 
+context_menu = [
+    {
+        "id": "add-node",
+        "label": "Add Node",
+        "tooltipText": "Add Node",
+        "availableOn": ["canvas"],
+        "onClick": "add_node",
+    },
+    {
+        "id": "remove",
+        "label": "Remove",
+        "tooltipText": "Remove",
+        "availableOn": ["node", "edge"],
+        "onClick": "remove",
+    },
+    {
+        "id": "add-edge",
+        "label": "Add Edge",
+        "tooltipText": "add edge",
+        "availableOn": ["node"],
+        "onClick": "add_edge",
+    },
+]
+
 default_stylesheet = [
-    {"selector": "node", "style": {"opacity": 0.65, "z-index": 9999}},
+    {   
+        "selector": "node", 
+        "style": {"opacity": 0.65, 
+                  "z-index": 9999}
+    },
     {
         "selector": "edge",
-        "style": {'width': 'data(weight)', "curve-style": "bezier", "opacity": 0.65, "z-index": 5000},
+        "style": {'width': 'data(weight)', 
+                  "curve-style": "bezier", 
+                  "opacity": 0.65, 
+                  "z-index": 5000},
     },
     {
         "selector": ".followerEdge",
@@ -76,60 +107,69 @@ def layout():
     nav_bar = navbar.draw_navbar()
     return html.Div(
     [   nav_bar,
-        html.Div(
-            className="eight columns",
-            children=[
-                cyto.Cytoscape(
-                    id="cytoscape",
-                    elements=cytoData.default_elements,
-                    stylesheet=default_stylesheet,
-                    style={"height": "95vh", "width": "100%"},
-                )
-            ],
-        ),
-        html.Div(
-            className="four columns",
-            children=[
-                dcc.Tabs(
-                    id="tabs",
-                    children=[
-                        dcc.Tab(
-                            label="Control Panel",
+        dbc.Row([
+            dbc.Col(html.Div(
+                        className="eight columns",
+                        children=[
+                            cyto.Cytoscape(
+                                id="cytoscape",
+                                elements=cytoData.default_elements,
+                                stylesheet=default_stylesheet,
+                                style={"height": "95vh", "width": "100%"},
+                                contextMenu=context_menu,
+                            )
+                        ],
+                    ),
+                    width=8
+            ),
+            dbc.Col(
+                dbc.Card(
+                    html.Div(
+                            className="four columns",
                             children=[
-                                drc.NamedDropdown(
-                                    name="Layout",
-                                    id="dropdown-layout",
-                                    options=drc.DropdownOptionsList(
-                                        "random",
-                                        "grid",
-                                        "circle",
-                                        "concentric",
-                                        "breadthfirst",
-                                        "cose",
-                                        "cose-bilkent",
-                                        "dagre",
-                                        "cola",
-                                        "klay",
-                                        "spread",
-                                        "euler",
-                                    ),
-                                    value="random",
-                                    clearable=False,
+                                dcc.Tabs(
+                                    id="tabs",
+                                    children=[
+                                        dcc.Tab(
+                                            label="Control Panel",
+                                            children=[
+                                                drc.NamedDropdown(
+                                                    name="Layout",
+                                                    id="dropdown-layout",
+                                                    options=drc.DropdownOptionsList(
+                                                        "random",
+                                                        "grid",
+                                                        "circle",
+                                                        "concentric",
+                                                        "breadthfirst",
+                                                        "cose",
+                                                        "cose-bilkent",
+                                                        "dagre",
+                                                        "cola",
+                                                        "klay",
+                                                        "spread",
+                                                        "euler",
+                                                    ),
+                                                    value="random",
+                                                    clearable=False
+                                                ),
+                                                drc.NamedRadioItems(
+                                                    name="Expand",
+                                                    id="radio-expand",
+                                                    options=drc.DropdownOptionsList(
+                                                        "followers", "following"
+                                                    ),
+                                                    value="followers",
+                                                ),
+                                            ],
+                                        ),
+                                    ],
                                 ),
-                                drc.NamedRadioItems(
-                                    name="Expand",
-                                    id="radio-expand",
-                                    options=drc.DropdownOptionsList(
-                                        "followers", "following"
-                                    ),
-                                    value="followers",
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ],
-        ),
+                            ]
+                    )
+                )
+            )
+        ])
     ]
 )
 

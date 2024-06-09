@@ -154,13 +154,12 @@ clientside_callback(
                                 'color': '#fff',
                             }
 						},
-
 						{
 							selector: 'edge',
 							css: {
 								'curve-style': 'bezier',
-								'target-arrow-shape': 'triangle'
-                                
+								'target-arrow-shape': 'none',
+                                'line-color': '#75abd2',
 							}
 						}
 					],

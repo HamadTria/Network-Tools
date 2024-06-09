@@ -11,7 +11,7 @@ register_page(__name__)
 def layout():
         nav_bar = navbar.draw_navbar()
         cyto = html.Div([
-                    html.Div(id="dummy-output-cytos"),
+                    html.Div(id="dummy-output-cyto"),
                     html.Div(id="cyto-container", style={"width": "100%", "height": "1000px"}),
                     html.Script(src="assets/cytoscape-cxtmenu.js")])
         return html.Div([nav_bar, cyto])
@@ -79,7 +79,7 @@ clientside_callback(
 						{
 							content: 'expand node',
 							select: function(ele){
-								console.log( ele.id() );
+								console.log(ele.id());
 							}
 						},
 
@@ -100,7 +100,7 @@ clientside_callback(
                         {
 							content: 'change size',
 							select: function(ele){
-								console.log( ele.position() );
+								console.log(ele.position());
 							}
 						}
 					]
@@ -127,7 +127,7 @@ clientside_callback(
 				});
     }
     """,
-    Output("dummy-output-cytos", "children"),
-    Input("dummy-output-cytos", "children")
+    Output("dummy-output-cyto", "children"),
+    Input("dummy-output-cyto", "children")
 )
         

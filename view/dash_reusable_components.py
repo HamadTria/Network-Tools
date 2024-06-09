@@ -1,4 +1,10 @@
 from dash import dcc, html
+import configparser
+import os
+
+config = configparser.ConfigParser()
+config_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage M1/code/Network-Tools/data/config.ini')
+config.read(config_path)
 
 def NamedDropdown(name, **kwargs):
     return html.Div(
@@ -14,11 +20,6 @@ def NamedRadioItems(name, **kwargs):
         style={"padding": "20px 10px 25px 4px"},
         children=[html.P(children=f"{name}:"), dcc.RadioItems(**kwargs)],
     )
-
-
-def NamedInput(name, **kwargs):
-    return html.Div(children=[html.P(children=f"{name}:"), dcc.Input(**kwargs)])
-
 
 # Utils
 def DropdownOptionsList(*args):
