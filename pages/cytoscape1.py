@@ -222,6 +222,7 @@ clientside_callback(
                         cySmall.elements().style('background-color', function(ele){
                             return cy.getElementById(ele.id()).style('background-color');
                         });
+                        cySmall.elements().style('line-color', 'grey');
                     }
                 }
             ]

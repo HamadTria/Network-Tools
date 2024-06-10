@@ -1,9 +1,8 @@
-from dash import html, clientside_callback, register_page
+from dash import html, clientside_callback, register_page, page_registry
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_cytoscape as cyto
 from view import navbar
-import time
 
 register_page(__name__)
 
@@ -23,7 +22,7 @@ def layout():
 
     cytograph = html.Div([
                     html.Div(id="cytos-compare"),
-                    html.Div(id="cyto-container-compare", style={"width": "100%", "height": "500px"})
+                    html.Div(id="cyto-container-compare", style={"width": "100%", "height": "500px"}),
     ])
     
     card_content_cyto = [
@@ -58,15 +57,23 @@ def layout():
     ]
 
     contents = dbc.Row([
-                        dbc.Col(dbc.Card(card_content_sigma, 
+                        dbc.Col([dbc.Card(card_content_sigma, 
                                         color="primary",
                                         outline=True,
-                                        style=card_style)), 
-                        dbc.Col(dbc.Card(card_content_cyto,
+                                        style=card_style),
+                                dbc.Button(dbc.NavLink("Discover more on sigma.js", 
+                                                       href=page_registry['pages.sigma']['path']), 
+                                                       className="ms-3"),
+                        ]), 
+                        dbc.Col([dbc.Card(card_content_cyto,
                                         color="primary",
                                         outline=True,
-                                        style=card_style))
+                                        style=card_style),
+                                dbc.Button(dbc.NavLink("Discover more on cytoscape", 
+                                                       href=page_registry['pages.cytoscape']['path']), 
+                                                       className="ms-3"),
                         ])
+                ])
     return html.Div([nav_bar, contents])
 
 clientside_callback(
