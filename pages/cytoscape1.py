@@ -1,6 +1,6 @@
 import json
 from dash import Input, Output, html, clientside_callback, register_page
-
+import dash_bootstrap_components as dbc
 import dash_cytoscape as cyto
 from view import navbar
 
@@ -9,17 +9,21 @@ cyto.load_extra_layouts()
 register_page(__name__)
 
 def layout():
-        nav_bar = navbar.draw_navbar()
-        cyto = html.Div([
-                    html.Div(id="dummy-output-cyto"),
-                    html.Div(id="cyto-container", style={"width": "100%", "height": "1000px"}),
-                    html.Script(src="assets/cytoscape-cxtmenu.js")])
-        return html.Div([nav_bar, cyto])
+    nav_bar = navbar.draw_navbar()
+    cyto_div = html.Div([
+        html.Div(id="dummy-output-cyto"),
+        dbc.Row([
+            html.Div(id="cyto-container", style={"width": "100%", "height": "800px", "display": "inline-block"}),
+        ]),
+        dbc.Col(html.Div(id="cyto-small-container", style={"width": "100%", "height": "200px", "display": "inline-block"}), width=3, lg = 1),
+        html.Script(src="assets/cytoscape-cxtmenu.js")
+    ])
+    return html.Div([nav_bar, cyto_div])
 
 clientside_callback(
     """
-    
     function initializeCytoscape() {
+        // Main Cytoscape instance
         var cy = window.cy = cytoscape({
             container: document.getElementById('cyto-container'),
             ready: function(){
@@ -28,7 +32,7 @@ clientside_callback(
                 {
                     selector: 'node',
                     css: {
-                        'content': 'data(name)',
+                        'content': 'data(label)',
                         'background-color': '#75abd2',
                         'color': '#fff',
                         'shape': 'ellipse',
@@ -44,7 +48,7 @@ clientside_callback(
                     }
                 },
                 {
-                selector: 'node:selected',
+                    selector: 'node:selected',
                     css: {
                         'background-color': '#4c7dab'
                     }
@@ -78,21 +82,56 @@ clientside_callback(
             }
         });
 
+        // Small Cytoscape instance
+        var cySmall = window.cySmall = cytoscape({
+            container: document.getElementById('cyto-small-container'),
+            ready: function(){
+            },
+            style: [
+                {
+                    selector: 'node',
+                    css: {
+                        'content': 'data(name)',
+                        'background-color': '#75abd2',
+                        'color': '#fff',
+                        'shape': 'ellipse',
+                        'width': '25px',
+                        'height': '25px'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    css: {
+                        'curve-style': 'bezier',
+                        'target-arrow-shape': 'none',
+                    }
+                }
+            ],
+            layout: {name: 'preset'},
+            elements: cy.json().elements
+        });
+
         cy.cxtmenu({
             selector: 'node, edge',
             commands: [
                 {
                     content: 'change size',
                     select: function(ele){
-						if (ele.style('width') === '100') {
-							ele.animate({
-								style: { 'width': '50px', 'height': '50px' }
-							}, { duration: 500 });
-						} else {
-							ele.animate({
-								style: { 'width': '100px', 'height': '100px' }
-							}, { duration: 500 });
-						}
+                        if (ele.style('width') === '100') {
+                            ele.animate({
+                                style: { 'width': '50px', 'height': '50px' }
+                            }, { duration: 500 });
+                            cySmall.getElementById(ele.id()).animate({
+                                style: { 'width': '25px', 'height': '25px' }
+                            }, { duration: 500 });
+                        } else {
+                            ele.animate({
+                                style: { 'width': '100px', 'height': '100px' }
+                            }, { duration: 500 });
+                            cySmall.getElementById(ele.id()).animate({
+                                style: { 'width': '50px', 'height': '50px' }
+                            }, { duration: 500 });
+                        }
                     }
                 },
                 {
@@ -102,29 +141,44 @@ clientside_callback(
                         if (cy.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
                             cy.elements().not(connectedNodesAndEdges).show();
                             cy.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+
+                            for (let i = 0; i < connectedNodesAndEdges.length; i++) {
+                                cySmall.getElementById(connectedNodesAndEdges[i].id()).style('background-color', '#75abd2');
+                                cySmall.getElementById(connectedNodesAndEdges[i].id()).style('line-color', 'grey');
+                            }
+
                         } else {
                             cy.elements().not(connectedNodesAndEdges).hide();
                             cy.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+
+                            for (let i = 0; i < connectedNodesAndEdges.length; i++) {
+                                cySmall.getElementById(connectedNodesAndEdges[i].id()).style('background-color', 'blue');
+                                cySmall.getElementById(connectedNodesAndEdges[i].id()).style('line-color', 'blue');
+                            }
                         }
                     }
                 },
                 {
-					content: 'change shape',
-					select: function(ele){
-						if (ele.style('shape') === 'square') {
-							ele.style('shape', 'ellipse');
-						} else {
-							ele.style('shape', 'square');
-						}
-					}
+                    content: 'change shape',
+                    select: function(ele){
+                        if (ele.style('shape') === 'square') {
+                            ele.style('shape', 'ellipse');
+                            cySmall.getElementById(ele.id()).style('shape', 'ellipse');
+                        } else {
+                            ele.style('shape', 'square');
+                            cySmall.getElementById(ele.id()).style('shape', 'square');
+                        }
+                    }
                 },
                 {
-					content: 'mark node',
-					select: function(ele){
-						if (ele.style('background-color') === 'rgb(255,0,0)') {
+                    content: 'mark node',
+                    select: function(ele){
+                        if (ele.style('background-color') === 'rgb(255,0,0)') {
                             ele.style('background-color', '#75abd2');
+                            cySmall.getElementById(ele.id()).style('background-color', '#75abd2');
                         } else {
                             ele.style('background-color', 'red');
+                            cySmall.getElementById(ele.id()).style('background-color', 'red');
                         }
                     }
                 },
@@ -133,7 +187,8 @@ clientside_callback(
                     select: function(ele){
                         ele.hide();
                         ele.style('visibility', 'hidden');
-					}
+                        cySmall.getElementById(ele.id()).style('background-color', 'grey');
+                    }
                 },
             ]
         });
@@ -158,6 +213,7 @@ clientside_callback(
                     select: function(){
                         cy.elements().show();
                         cy.elements().style('visibility', 'visible');
+                        cySmall.elements().style('background-color', '#75abd2');
                     }
                 }
             ]

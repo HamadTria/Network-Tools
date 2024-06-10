@@ -109,7 +109,6 @@ def layout():
     [   nav_bar,
         dbc.Row([
             dbc.Col(html.Div(
-                        className="eight columns",
                         children=[
                             cyto.Cytoscape(
                                 id="cytoscape",
@@ -125,45 +124,35 @@ def layout():
             dbc.Col(
                 dbc.Card(
                     html.Div(
-                            className="four columns",
                             children=[
-                                dcc.Tabs(
-                                    id="tabs",
-                                    children=[
-                                        dcc.Tab(
-                                            label="Control Panel",
-                                            children=[
-                                                drc.NamedDropdown(
-                                                    name="Layout",
-                                                    id="dropdown-layout",
-                                                    options=drc.DropdownOptionsList(
-                                                        "random",
-                                                        "grid",
-                                                        "circle",
-                                                        "concentric",
-                                                        "breadthfirst",
-                                                        "cose",
-                                                        "cose-bilkent",
-                                                        "dagre",
-                                                        "cola",
-                                                        "klay",
-                                                        "spread",
-                                                        "euler",
-                                                    ),
-                                                    value="random",
-                                                    clearable=False
-                                                ),
-                                                drc.NamedRadioItems(
-                                                    name="Expand",
-                                                    id="radio-expand",
-                                                    options=drc.DropdownOptionsList(
-                                                        "followers", "following"
-                                                    ),
-                                                    value="followers",
-                                                ),
-                                            ],
-                                        ),
-                                    ],
+                                html.H3("Control panel", style={"textAlign": "center", 'border-radius': '5px'}),
+                                drc.NamedDropdown(
+                                    name="Layout",
+                                    id="dropdown-layout",
+                                    options=drc.DropdownOptionsList(
+                                        "random",
+                                        "grid",
+                                        "circle",
+                                        "concentric",
+                                        "breadthfirst",
+                                        "cose",
+                                        "cose-bilkent",
+                                        "dagre",
+                                        "cola",
+                                        "klay",
+                                        "spread",
+                                        "euler",
+                                    ),
+                                    value="random",
+                                    clearable=False
+                                ),
+                                drc.NamedRadioItems(
+                                    name="Expand",
+                                    id="radio-expand",
+                                    options=drc.DropdownOptionsList(
+                                        "followers", "following"
+                                    ),
+                                    value="followers",
                                 ),
                             ]
                     )
@@ -172,16 +161,6 @@ def layout():
         ])
     ]
 )
-
-
-@callback(Output("tap-node-json-output", "children"), Input("cytoscape", "tapNode"))
-def display_tap_node(data):
-    return json.dumps(data, indent=2)
-
-
-@callback(Output("tap-edge-json-output", "children"), Input("cytoscape", "tapEdge"))
-def display_tap_edge(data):
-    return json.dumps(data, indent=2)
 
 
 @callback(Output("cytoscape", "layout"), Input("dropdown-layout", "value"))
