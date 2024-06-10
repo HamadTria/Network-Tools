@@ -11,13 +11,16 @@ register_page(__name__)
 def layout():
     nav_bar = navbar.draw_navbar()
     cyto_div = html.Div([
-        html.Div(id="dummy-output-cyto"),
-        dbc.Row([
-            html.Div(id="cyto-container", style={"width": "100%", "height": "800px", "display": "inline-block"}),
-        ]),
-        dbc.Col(html.Div(id="cyto-small-container", style={"width": "100%", "height": "200px", "display": "inline-block"}), width=3, lg = 1),
-        html.Script(src="assets/cytoscape-cxtmenu.js")
-    ])
+                    html.Div(id="dummy-output-cyto"),
+                    dbc.Row([
+                        html.Div(id="cyto-container", style={"width": "100%", "height": "800px", "display": "inline-block"}),
+                    ]),
+                    dbc.Col(
+                        html.Div(id="cyto-small-container", style={"width": "100%", "height": "200px", "display": "inline-block"}), 
+                        width=3, lg = 1
+                    ),
+                    html.Script(src="assets/cytoscape-cxtmenu.js"), 
+                ])
     return html.Div([nav_bar, cyto_div])
 
 clientside_callback(
@@ -139,11 +142,14 @@ clientside_callback(
                     select: function(ele){
                         let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
                         if (cy.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
+
                             cy.elements().not(connectedNodesAndEdges).show();
                             cy.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
 
                             for (let i = 0; i < connectedNodesAndEdges.length; i++) {
-                                cySmall.getElementById(connectedNodesAndEdges[i].id()).style('background-color', '#75abd2');
+                                cySmall.getElementById(connectedNodesAndEdges[i].id()).style('background-color', function(ele){
+                                    return cy.getElementById(connectedNodesAndEdges[i].id()).style('background-color');
+                                });
                                 cySmall.getElementById(connectedNodesAndEdges[i].id()).style('line-color', 'grey');
                             }
 
@@ -213,7 +219,9 @@ clientside_callback(
                     select: function(){
                         cy.elements().show();
                         cy.elements().style('visibility', 'visible');
-                        cySmall.elements().style('background-color', '#75abd2');
+                        cySmall.elements().style('background-color', function(ele){
+                            return cy.getElementById(ele.id()).style('background-color');
+                        });
                     }
                 }
             ]
