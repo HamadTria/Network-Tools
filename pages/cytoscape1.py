@@ -18,15 +18,13 @@ def layout():
                     dbc.Col(
                         html.Div(id="cyto-small-container", style={"width": "100%", "height": "200px", "display": "inline-block"}), 
                         width=3, lg = 1
-                    ),
-                    html.Script(src="assets/cytoscape-cxtmenu.js"), 
+                    )
                 ])
     return html.Div([nav_bar, cyto_div])
 
 clientside_callback(
     """
     function initializeCytoscape() {
-        // Main Cytoscape instance
         var cy = window.cy = cytoscape({
             container: document.getElementById('cyto-container'),
             ready: function(){
