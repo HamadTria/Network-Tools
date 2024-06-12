@@ -44,7 +44,7 @@ clientside_callback(
                 {
                     selector: 'edge',
                     css: {
-                        'curve-style': 'bezier',
+                        'curve-style': 'bezier', // bezier curve control point to show curvature
                         'target-arrow-shape': 'triangle'
                     }
                 },

@@ -11,7 +11,9 @@ app = Dash(__name__,
            use_pages=True,
            suppress_callback_exceptions=True,
            external_stylesheets=[dbc.themes.CYBORG],
-           external_scripts=[config['Sigma']['script'], config['Cytoscape']['script']])
+           external_scripts=[config['Sigma']['script'], config['Cytoscape']['script']],
+           title=config['General']['title'])
+
 
 app.layout = html.Div(
     style={'backgroundColor': str(config['Colors']['background'])},
