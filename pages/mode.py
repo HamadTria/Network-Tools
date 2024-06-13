@@ -1,27 +1,11 @@
-from dash import Input, Output, State, dcc, html, callback, register_page
+from dash import Input, Output, dcc, html, callback, register_page
 import dash_cytoscape as cyto
 import dash_bootstrap_components as dbc
 from view import dash_reusable_components as drc
 from view import navbar
+from data.authors import nodes, edges
 
 register_page(__name__)
-
-# Sample multi-mode graph data
-nodes = {
-    "Author": ["Author 1", "Author 2", "Author 3"],
-    "Paper": ["Paper 1", "Paper 2"],
-    "Conference": ["Conf 1", "Conf 2"],
-    "Book": ["Book 1", "Book 2"],
-}
-
-edges = [
-    ("Author 1", "Paper 1"), ("Author 2", "Paper 1"),
-    ("Author 2", "Paper 2"), ("Author 3", "Paper 2"),
-    ("Author 1", "Conf 1"), ("Author 2", "Conf 1"),
-    ("Author 3", "Conf 2"), 
-    ("Author 1", "Book 1"), ("Author 3", "Book 1"),
-    ("Author 2", "Book 2"), ("Author 3", "Book 2"),
-]
 
 # Create multi-mode graph elements
 multi_mode_elements = [
@@ -34,6 +18,17 @@ multi_mode_elements = [
 
 # Function to perform the n-mode to one-mode transformation
 def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
+    """Transforms an n-mode graph to a one-mode graph by considering the shared neighbors between target_mode nodes.
+    
+    Args:
+        nodes (dict): A dictionary of nodes for each mode.
+        edges (list): A list of edges between nodes in different modes.
+        target_mode (str): The target mode to consider.
+        other_modes (list): A list of modes to consider for shared neighbors.
+        
+    Returns:
+        list: A list of edges between target_mode nodes.
+    """
     target_nodes = nodes[target_mode]
     other_nodes = {node for mode in other_modes for node in nodes[mode]}
     
@@ -82,6 +77,9 @@ def layout():
                                             {"selector": ".paper", "style": {"background-color": "lightgreen", "label": "data(label)", 'color': '#fff',}},
                                             {"selector": ".conference", "style": {"background-color": "lightcoral", "label": "data(label)", 'color': '#fff',}},
                                             {"selector": ".book", "style": {"background-color": "lightyellow", "label": "data(label)", 'color': '#fff',}},
+                                            {"selector": ".institution", "style": {"background-color": "lightpink", "label": "data(label)", 'color': '#fff',}},
+                                            {"selector": ".journal", "style": {"background-color": "red", "label": "data(label)", 'color': '#fff',}},
+                                            {"selector": ".publisher", "style": {"background-color": "purple", "label": "data(label)", 'color': '#fff',}},
                                             {"selector": "edge", "style": {"line-color": "#aaa"}},
                                         ]
                                     )   
