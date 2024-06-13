@@ -8,19 +8,19 @@ register_page(__name__)
 
 # Sample multi-mode graph data
 nodes = {
-    "Author": ["Author1", "Author2", "Author3"],
-    "Paper": ["Paper1", "Paper2"],
-    "Conference": ["Conf1", "Conf2"],
-    "Book": ["Book1", "Book2"],
+    "Author": ["Author 1", "Author 2", "Author 3"],
+    "Paper": ["Paper 1", "Paper 2"],
+    "Conference": ["Conf 1", "Conf 2"],
+    "Book": ["Book 1", "Book 2"],
 }
 
 edges = [
-    ("Author1", "Paper1"), ("Author2", "Paper1"),
-    ("Author2", "Paper2"), ("Author3", "Paper2"),
-    ("Author1", "Conf1"), ("Author2", "Conf1"),
-    ("Author3", "Conf2"), 
-    ("Author1", "Book1"), ("Author3", "Book1"),
-    ("Author2", "Book2"), ("Author3", "Book2"),
+    ("Author 1", "Paper 1"), ("Author 2", "Paper 1"),
+    ("Author 2", "Paper 2"), ("Author 3", "Paper 2"),
+    ("Author 1", "Conf 1"), ("Author 2", "Conf 1"),
+    ("Author 3", "Conf 2"), 
+    ("Author 1", "Book 1"), ("Author 3", "Book 1"),
+    ("Author 2", "Book 2"), ("Author 3", "Book 2"),
 ]
 
 # Create multi-mode graph elements
