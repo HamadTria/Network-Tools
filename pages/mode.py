@@ -112,7 +112,7 @@ def layout():
                                         value=["Paper", "Conference"],
                                         multi=True
                                     ),
-                                ]),
+                                ], className="ms-3", style={"width": "48%"}),
                 ])
     return html.Div([navbar.draw_navbar(), content])
 
