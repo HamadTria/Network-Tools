@@ -22,7 +22,7 @@ def layout():
                 ])
     return html.Div([nav_bar, cyto_div])
 
-with open('assets/cytoscape1.js', 'r') as file:
+with open('assets/cntx.js', 'r') as file:
     js_code = file.read()
 
 clientside_callback(

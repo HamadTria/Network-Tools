@@ -60,6 +60,22 @@ def layout():
         "color": "#FFFFFF",
     }
 
+    multi_mode_stylsheet = [
+                            {"selector": ".author", "style": {"background-color": "lightblue", "label": "data(label)", 'color': '#fff', 'width': '50px', 'height': '50px'}},
+                            {"selector": ".paper", "style": {"background-color": "lightgreen", "label": "data(label)", 'color': '#fff',}},
+                            {"selector": ".conference", "style": {"background-color": "lightcoral", "label": "data(label)", 'color': '#fff',}},
+                            {"selector": ".book", "style": {"background-color": "lightyellow", "label": "data(label)", 'color': '#fff',}},
+                            {"selector": ".institution", "style": {"background-color": "lightpink", "label": "data(label)", 'color': '#fff',}},
+                            {"selector": ".journal", "style": {"background-color": "red", "label": "data(label)", 'color': '#fff',}},
+                            {"selector": ".publisher", "style": {"background-color": "purple", "label": "data(label)", 'color': '#fff',}},
+                            {"selector": "edge", "style": {"line-color": "#aaa"}},
+    ]
+
+    one_mode_stylsheet =  [
+                            {"selector": ".author", "style": {"background-color": "lightblue", "label": "data(label)", 'color': '#fff'}},
+                            {"selector": "edge", "style": {"line-color": "#aaa", "label": "data(weight)", 'color': '#fff'}}
+    ]
+
     content = html.Div([
                         html.Div([
                             dbc.Card([
@@ -72,16 +88,7 @@ def layout():
                                         elements=multi_mode_elements,
                                         style={"width": "100%", "height": "500px"},
                                         layout={"name": "breadthfirst"},
-                                        stylesheet=[
-                                            {"selector": ".author", "style": {"background-color": "lightblue", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": ".paper", "style": {"background-color": "lightgreen", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": ".conference", "style": {"background-color": "lightcoral", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": ".book", "style": {"background-color": "lightyellow", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": ".institution", "style": {"background-color": "lightpink", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": ".journal", "style": {"background-color": "red", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": ".publisher", "style": {"background-color": "purple", "label": "data(label)", 'color': '#fff',}},
-                                            {"selector": "edge", "style": {"line-color": "#aaa"}},
-                                        ]
+                                        stylesheet=multi_mode_stylsheet,
                                     )   
                                 )
                             ], style=card_style, outline=True, color="primary"),
@@ -95,10 +102,7 @@ def layout():
                                         elements=[],
                                         style={"width": "100%", "height": "500px"},
                                         layout={"name": "cose"},
-                                        stylesheet=[
-                                            {"selector": ".author", "style": {"background-color": "lightblue", "label": "data(label)", 'color': '#fff'}},
-                                            {"selector": "edge", "style": {"line-color": "#aaa", "label": "data(weight)", 'color': '#fff'}}
-                                        ]
+                                        stylesheet=one_mode_stylsheet
                                     )
                                 )
                             ], style=card_style, outline=True, color="primary",)
