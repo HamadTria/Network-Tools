@@ -1,10 +1,6 @@
-import json
 from dash import Input, Output, html, clientside_callback, register_page
 import dash_bootstrap_components as dbc
-import dash_cytoscape as cyto
 from view import navbar
-
-cyto.load_extra_layouts()
 
 register_page(__name__)
 
