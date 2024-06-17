@@ -1,6 +1,7 @@
 from dash import Input, Output, dcc, html, callback, register_page, clientside_callback
 import dash_cytoscape as cyto
 import dash_bootstrap_components as dbc
+import dash_mantine_components as dmc
 from view import dash_reusable_components as drc
 from view import navbar
 from data.authors import nodes, edges
@@ -93,43 +94,50 @@ def layout():
     ]
 
     content = html.Div([
-                        html.Div([
-                            dbc.Card([
-                                dbc.CardHeader("Multi-Mode Graph", 
-                                               className="text-center",
-                                               style=card_header_style),
-                                dbc.CardBody([
-                                    html.Div(id="multi-mode-dummy-output"),
-                                    html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
-                                ])
-                            ], style=card_style, outline=True, color="primary"),
-                            dbc.Card([
-                                dbc.CardHeader("One-Mode Graph",
+                    html.Div([html.Label("Select Modes to Consider:"),
+                            dcc.Dropdown(
+                                    id="mode-dropdown",
+                                    options=[{"label": mode, "value": mode} for mode in nodes.keys() if mode != "Author"],
+                                    value=["Paper", "Conference"],
+                                    multi=True
+                                ),
+                            ], className="ms-3", style={"width": "48%"}),
+                    html.Div([
+                        dbc.Card([
+                            dbc.CardHeader("Multi-Mode Graph", 
                                             className="text-center",
                                             style=card_header_style),
-                                dbc.CardBody(
-                                    cyto.Cytoscape(
-                                        id="one-mode-graph",
-                                        elements=[],
-                                        style={"width": "100%", "height": "500px"},
-                                        layout={"name": "cose"},
-                                        stylesheet=one_mode_stylsheet
-                                    )
+                            dbc.CardBody([
+                                html.Div(id="multi-mode-dummy-output"),
+                                html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
+                            ])
+                        ], style=card_style, outline=True, color="primary"),
+                        dbc.Card([
+                            dbc.CardHeader("One-Mode Graph",
+                                        className="text-center",
+                                        style=card_header_style),
+                            dbc.CardBody(
+                                cyto.Cytoscape(
+                                    id="one-mode-graph",
+                                    elements=[],
+                                    style={"width": "100%", "height": "500px"},
+                                    layout={"name": "cose"},
+                                    stylesheet=one_mode_stylsheet
                                 )
-                            ], style=card_style, outline=True, color="primary",)
-                        ]),
-                        html.Div([html.Label("Select Modes to Consider:"),
-                                dcc.Dropdown(
-                                        id="mode-dropdown",
-                                        options=[{"label": mode, "value": mode} for mode in nodes.keys() if mode != "Author"],
-                                        value=["Paper", "Conference"],
-                                        multi=True
-                                    ),
-                                ], className="ms-3", style={"width": "48%"}),
-                        dbc.Row([
-                            dbc.Col(html.Pre(id="multi-mode-nodes", children=json.dumps(multi_mode_nodes, indent=2))),
-                            dbc.Col(html.Pre(id="multi-mode-edges", children=json.dumps(multi_mode_edges, indent=2)))
-                        ], className="ms-3", id="multi-mode-jsons"),
+                            )
+                        ], style=card_style, outline=True, color="primary",)
+                    ]),
+                    dbc.Row(className="ms-1", id="multi-mode-jsons", children=[
+                        dmc.Title("Multi-Mode Graph Data", order=3),
+                        dbc.Card(style={"width": "350px", "height":"250px"}, outline=True, color="primary", 
+                                    className="ms-1",children=[
+                            dmc.ScrollArea(h=250, w=335, type='hover', id = "ScrollArea",children=[
+                                dbc.Col(html.Pre(id="multi-mode-nodes", children=json.dumps(multi_mode_nodes, indent=2))),
+                                dbc.Col(html.Pre(id="multi-mode-edges", children=json.dumps(multi_mode_edges, indent=2)))
+                            ]),
+                            dcc.Clipboard(target_id="ScrollArea")
+                        ])
+                    ]),
                 ])
     return html.Div([navbar.draw_navbar(), content])
 

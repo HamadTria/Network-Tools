@@ -107,7 +107,7 @@ function initializeCytoscape() {
             {
                 content: 'change size',
                 select: function(ele){
-                    if (ele.style('width') === '100') {
+                    if (ele.style('width') === '100'){
                         ele.animate({
                             style: { 'width': '50px', 'height': '50px' }
                         }, { duration: 500 });
