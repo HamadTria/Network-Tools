@@ -13,6 +13,7 @@ function initializeCytoscape() {
                 selector: 'node',
                 css: {
                     'content': 'data(label)',
+                    "font-size": "30px",
                     'background-color': 'lightblue',
                     'color': '#fff',
                     'shape': 'ellipse',
@@ -26,8 +27,8 @@ function initializeCytoscape() {
                     'background-color': 'lightblue',
                     'label': 'data(label)',
                     'color': '#fff',
-                    'width': '50px',
-                    'height': '50px'
+                    'width': '100px',
+                    'height': '100px'
                 }
             },
             {
