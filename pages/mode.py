@@ -1,9 +1,10 @@
-from dash import Input, Output, dcc, html, callback, register_page
+from dash import Input, Output, dcc, html, callback, register_page, clientside_callback
 import dash_cytoscape as cyto
 import dash_bootstrap_components as dbc
 from view import dash_reusable_components as drc
 from view import navbar
 from data.authors import nodes, edges
+import json
 
 register_page(__name__)
 
@@ -13,6 +14,16 @@ multi_mode_elements = [
     for mode, node_list in nodes.items() 
     for node in node_list
 ] + [
+    {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
+]
+
+multi_mode_nodes = [
+    {"data": {"id": node, "label": node}, "classes": mode.lower()} 
+    for mode, node_list in nodes.items() 
+    for node in node_list
+]
+
+multi_mode_edges = [
     {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
 ]
 
@@ -60,20 +71,25 @@ def layout():
         "color": "#FFFFFF",
     }
 
-    multi_mode_stylsheet = [
-                            {"selector": ".author", "style": {"background-color": "lightblue", "label": "data(label)", 'color': '#fff', 'width': '50px', 'height': '50px'}},
-                            {"selector": ".paper", "style": {"background-color": "lightgreen", "label": "data(label)", 'color': '#fff',}},
-                            {"selector": ".conference", "style": {"background-color": "lightcoral", "label": "data(label)", 'color': '#fff',}},
-                            {"selector": ".book", "style": {"background-color": "lightyellow", "label": "data(label)", 'color': '#fff',}},
-                            {"selector": ".institution", "style": {"background-color": "lightpink", "label": "data(label)", 'color': '#fff',}},
-                            {"selector": ".journal", "style": {"background-color": "red", "label": "data(label)", 'color': '#fff',}},
-                            {"selector": ".publisher", "style": {"background-color": "purple", "label": "data(label)", 'color': '#fff',}},
-                            {"selector": "edge", "style": {"line-color": "#aaa"}},
-    ]
-
     one_mode_stylsheet =  [
-                            {"selector": ".author", "style": {"background-color": "lightblue", "label": "data(label)", 'color': '#fff'}},
-                            {"selector": "edge", "style": {"line-color": "#aaa", "label": "data(weight)", 'color': '#fff'}}
+        {
+            "selector": ".author", 
+            "style": 
+            {
+                "background-color": "lightblue", 
+                "label": "data(label)", 
+                'color': '#fff'
+            }
+        },
+        {
+            "selector": "edge", 
+            "style": 
+            {
+                "line-color": "#aaa", 
+                "label": "data(weight)", 
+                'color': '#fff'
+            }
+        }
     ]
 
     content = html.Div([
@@ -82,15 +98,10 @@ def layout():
                                 dbc.CardHeader("Multi-Mode Graph", 
                                                className="text-center",
                                                style=card_header_style),
-                                dbc.CardBody(
-                                    cyto.Cytoscape(
-                                        id="multi-mode-graph",
-                                        elements=multi_mode_elements,
-                                        style={"width": "100%", "height": "500px"},
-                                        layout={"name": "breadthfirst"},
-                                        stylesheet=multi_mode_stylsheet,
-                                    )   
-                                )
+                                dbc.CardBody([
+                                    html.Div(id="multi-mode-dummy-output"),
+                                    html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
+                                ])
                             ], style=card_style, outline=True, color="primary"),
                             dbc.Card([
                                 dbc.CardHeader("One-Mode Graph",
@@ -115,6 +126,10 @@ def layout():
                                         multi=True
                                     ),
                                 ], className="ms-3", style={"width": "48%"}),
+                        dbc.Row([
+                            dbc.Col(html.Pre(id="multi-mode-nodes", children=json.dumps(multi_mode_nodes, indent=2))),
+                            dbc.Col(html.Pre(id="multi-mode-edges", children=json.dumps(multi_mode_edges, indent=2)))
+                        ], className="ms-3", id="multi-mode-jsons"),
                 ])
     return html.Div([navbar.draw_navbar(), content])
 
@@ -130,3 +145,12 @@ def update_one_mode_graph(selected_modes):
         {"data": {"source": edge[0], "target": edge[1], "weight": edge[2]}} for edge in one_mode_edges
     ]
     return one_mode_elements
+
+with open('assets/multi_mode.js', 'r') as file:
+    js_code = file.read()
+
+clientside_callback(
+    js_code,
+    Output("multi-mode-dummy-output", "children"),
+    Input("multi-mode-dummy-output", "children")
+)
