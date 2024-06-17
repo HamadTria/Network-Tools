@@ -61,9 +61,6 @@ def layout():
     card_style = {
         "margin": "1rem",
         "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
-        "width": "48%", 
-        "display": "inline-block", 
-        "vertical-align": "top"
     }
 
     card_header_style = {
@@ -94,65 +91,89 @@ def layout():
     ]
 
     content = html.Div([
-                    html.Div([html.Label("Select Modes to Consider:"),
-                            dcc.Dropdown(
-                                    id="mode-dropdown",
-                                    options=[{"label": mode, "value": mode} for mode in nodes.keys() if mode != "Author"],
-                                    value=["Paper", "Conference"],
-                                    multi=True
-                                ),
-                            ], className="ms-3", style={"width": "48%"}),
                     html.Div([
-                        dbc.Card([
-                            dbc.CardHeader("Multi-Mode Graph", 
+                        html.Label("Select Modes to Consider:"),
+                        dcc.Dropdown(
+                                id="mode-dropdown",
+                                options=[{"label": mode, "value": mode} for mode in nodes.keys() if mode != "Author"],
+                                value=["Paper", "Conference"],
+                                multi=True
+                            ),
+                        ], className="ms-3", style={"width": "48%"}),
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Card([
+                                dbc.CardHeader("Multi-Mode Graph", 
+                                                className="text-center",
+                                                style=card_header_style),
+                                dbc.CardBody([
+                                    html.Div(id="multi-mode-dummy-output"),
+                                    html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
+                                ])
+                            ], style=card_style, outline=True, color="primary", className="ms-3"),
+                            dbc.Row([
+                                dmc.Title("Multi-Mode Graph Data", order=3),
+                                dbc.Card(style={"width": "350px", "height":"250px"}, outline=True, color="primary", 
+                                            className="ms-1",children=[
+                                    dmc.ScrollArea(h=250, w=335, type='hover', id = "multi-mode-scroll-area",children=[
+                                        dbc.Tabs([
+                                            dbc.Tab(html.Pre(id="multi-mode-edges", children=json.dumps(multi_mode_edges, indent=2)), label="Edges"),
+                                            dbc.Tab(html.Pre(id="multi-mode-nodes", children=json.dumps(multi_mode_nodes, indent=2)), label="Nodes")
+                                        ])
+                                    ]),
+                                    dcc.Clipboard(target_id="multi-mode-scroll-area")
+                                ])
+                            ], className="ms-3", id="multi-mode-jsons"),
+                        ]),
+                        dbc.Col([
+                            dbc.Card([
+                                dbc.CardHeader("One-Mode Graph",
                                             className="text-center",
                                             style=card_header_style),
-                            dbc.CardBody([
-                                html.Div(id="multi-mode-dummy-output"),
-                                html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
-                            ])
-                        ], style=card_style, outline=True, color="primary"),
-                        dbc.Card([
-                            dbc.CardHeader("One-Mode Graph",
-                                        className="text-center",
-                                        style=card_header_style),
-                            dbc.CardBody(
-                                cyto.Cytoscape(
-                                    id="one-mode-graph",
-                                    elements=[],
-                                    style={"width": "100%", "height": "500px"},
-                                    layout={"name": "cose"},
-                                    stylesheet=one_mode_stylsheet
+                                dbc.CardBody(
+                                    cyto.Cytoscape(
+                                        id="one-mode-graph",
+                                        elements=[],
+                                        style={"width": "100%", "height": "500px"},
+                                        layout={"name": "cose"},
+                                        stylesheet=one_mode_stylsheet
+                                    )
                                 )
-                            )
-                        ], style=card_style, outline=True, color="primary",)
-                    ]),
-                    dbc.Row(className="ms-1", id="multi-mode-jsons", children=[
-                        dmc.Title("Multi-Mode Graph Data", order=3),
-                        dbc.Card(style={"width": "350px", "height":"250px"}, outline=True, color="primary", 
-                                    className="ms-1",children=[
-                            dmc.ScrollArea(h=250, w=335, type='hover', id = "ScrollArea",children=[
-                                dbc.Col(html.Pre(id="multi-mode-nodes", children=json.dumps(multi_mode_nodes, indent=2))),
-                                dbc.Col(html.Pre(id="multi-mode-edges", children=json.dumps(multi_mode_edges, indent=2)))
-                            ]),
-                            dcc.Clipboard(target_id="ScrollArea")
-                        ])
-                    ]),
+                            ], style=card_style, outline=True, color="primary", className="ms-3"),
+                            dbc.Row([
+                                dmc.Title("One-Mode Graph Data", order=3),
+                                dbc.Card(style={"width": "350px", "height":"250px"}, outline=True, color="primary", 
+                                            className="ms-1",children=[
+                                    dmc.ScrollArea(h=250, w=335, type='hover', id = "one-mode-scroll-area",children=[
+                                        dbc.Tabs([
+                                            dbc.Tab(html.Pre(id="one-mode-edges"), label="Edges"),
+                                            dbc.Tab(html.Pre(id="one-mode-nodes"), label="Nodes")
+                                        ])
+                                    ]),
+                                    dcc.Clipboard(target_id="one-mode-scroll-area")
+                                ])
+                            ], className="ms-3", id="one-mode-jsons"),
+                        ]),
+                    ])
                 ])
     return html.Div([navbar.draw_navbar(), content])
 
 @callback(
     Output("one-mode-graph", "elements"),
+    Output("one-mode-nodes", "children"),
+    Output("one-mode-edges", "children"),
     Input("mode-dropdown", "value")
 )
-def update_one_mode_graph(selected_modes):
+def update_one_mode_graph_and_data(selected_modes):
     one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
     one_mode_elements = [
         {"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]
     ] + [
         {"data": {"source": edge[0], "target": edge[1], "weight": edge[2]}} for edge in one_mode_edges
     ]
-    return one_mode_elements
+    one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2]}} for edge in one_mode_edges]
+    one_mode_nodes_data = [{"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]]
+    return one_mode_elements, json.dumps(one_mode_nodes_data, indent=2), json.dumps(one_mode_edges_data, indent=2)
 
 with open('assets/multi_mode.js', 'r') as file:
     js_code = file.read()
