@@ -10,14 +10,6 @@ import json
 register_page(__name__)
 
 # Create multi-mode graph elements
-multi_mode_elements = [
-    {"data": {"id": node, "label": node}, "classes": mode.lower()} 
-    for mode, node_list in nodes.items() 
-    for node in node_list
-] + [
-    {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
-]
-
 multi_mode_nodes = [
     {"data": {"id": node, "label": node}, "classes": mode.lower()} 
     for mode, node_list in nodes.items() 
@@ -27,6 +19,8 @@ multi_mode_nodes = [
 multi_mode_edges = [
     {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
 ]
+
+multi_mode_elements = multi_mode_nodes + multi_mode_edges
 
 # Function to perform the n-mode to one-mode transformation
 def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
