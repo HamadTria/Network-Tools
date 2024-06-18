@@ -70,7 +70,8 @@ def layout():
             {
                 "background-color": "lightblue", 
                 "label": "data(label)", 
-                'color': '#fff'
+                'color': '#fff',
+                "font-size": "10px",
             }
         },
         {
