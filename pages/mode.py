@@ -9,6 +9,8 @@ import json
 
 register_page(__name__)
 
+default_dropdown_values = ["Paper", "Conference"]
+
 # Create multi-mode graph elements
 multi_mode_nodes = [
     {"data": {"id": node, "label": node}, "classes": mode.lower()} 
@@ -19,8 +21,6 @@ multi_mode_nodes = [
 multi_mode_edges = [
     {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
 ]
-
-multi_mode_elements = multi_mode_nodes + multi_mode_edges
 
 # Function to perform the n-mode to one-mode transformation
 def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
@@ -92,7 +92,7 @@ def layout():
                         dcc.Dropdown(
                                 id="mode-dropdown",
                                 options=[{"label": mode, "value": mode} for mode in nodes.keys() if mode != "Author"],
-                                value=["Paper", "Conference"],
+                                value=default_dropdown_values,
                                 multi=True
                             ),
                         ], className="ms-3", style={"width": "48%"}),
@@ -129,18 +129,13 @@ def layout():
                         dbc.Col([
 
                             dbc.Card([
-                                dbc.CardHeader("One-Mode Graph",
-                                            className="text-center",
-                                            style=card_header_style),
-                                dbc.CardBody(
-                                    cyto.Cytoscape(
-                                        id="one-mode-graph",
-                                        elements=[],
-                                        style={"width": "100%", "height": "500px"},
-                                        layout={"name": "cose"},
-                                        stylesheet=one_mode_stylsheet
-                                    )
-                                )
+                                dbc.CardHeader("One-Mode Graph", 
+                                                className="text-center",
+                                                style=card_header_style),
+                                dbc.CardBody([
+                                    html.Div(id="one-mode-dummy-output"),
+                                    html.Div(id="one-mode-container", style={"width": "100%", "height": "500px"}),
+                                ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
 
                             dbc.Row([
@@ -150,7 +145,7 @@ def layout():
                                     dmc.ScrollArea(h=250, w=335, type='hover', id = "one-mode-scroll-area",children=[
                                         dbc.Tabs([
                                             dbc.Tab(html.Pre(id="one-mode-edges"), label="Edges"),
-                                            dbc.Tab(html.Pre(id="one-mode-nodes"), label="Nodes")
+                                            dbc.Tab(html.Pre(id="one-mode-nodes"),label="Nodes")
                                         ])
                                     ]),
                                     dcc.Clipboard(target_id="one-mode-scroll-area")
@@ -162,21 +157,15 @@ def layout():
     return html.Div([navbar.draw_navbar(), content])
 
 @callback(
-    Output("one-mode-graph", "elements"),
-    Output("one-mode-nodes", "children"),
-    Output("one-mode-edges", "children"),
+    [Output("one-mode-nodes", "children"),
+    Output("one-mode-edges", "children")],
     Input("mode-dropdown", "value")
 )
 def update_one_mode_graph_and_data(selected_modes):
     one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
-    one_mode_elements = [
-        {"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]
-    ] + [
-        {"data": {"source": edge[0], "target": edge[1], "weight": edge[2]}} for edge in one_mode_edges
-    ]
     one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2]}} for edge in one_mode_edges]
     one_mode_nodes_data = [{"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]]
-    return one_mode_elements, json.dumps(one_mode_nodes_data, indent=2), json.dumps(one_mode_edges_data, indent=2)
+    return json.dumps(one_mode_nodes_data, indent=2), json.dumps(one_mode_edges_data, indent=2)
 
 with open('assets/multi_mode.js', 'r') as file:
     js_code = file.read()
@@ -184,5 +173,6 @@ with open('assets/multi_mode.js', 'r') as file:
 clientside_callback(
     js_code,
     Output("multi-mode-dummy-output", "children"),
-    Input("multi-mode-dummy-output", "children")
+    [Input("multi-mode-dummy-output", "children"),
+    Input("mode-dropdown", "value")]
 )

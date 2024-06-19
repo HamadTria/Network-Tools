@@ -85,109 +85,159 @@ function initializeCytoscape() {
         }
     });
 
-    // Store original colors
+    // Store original colors for multi-mode graph
     cyMulti.nodes().forEach(node => {
         node.data('originalColor', node.style('background-color'));
     });
-
-
-    // Context menu for graphs
-    cyMulti.cxtmenu({
-        selector: 'node, edge',
-        commands: [
-            {
-                content: 'change size',
-                select: function(ele){
-                    if (ele.style('width') === '100'){
-                        ele.animate({
-                            style: { 'width': '50px', 'height': '50px' }
-                        }, { duration: 500 });
-                    } else {
-                        ele.animate({
-                            style: { 'width': '100px', 'height': '100px' }
-                        }, { duration: 500 });
+    
+    // Delay one-mode graph to wait for dropdown menu callback
+    setTimeout(function() {
+        var one_mode_nodes = JSON.parse(document.getElementById('one-mode-nodes').textContent);
+        var one_mode_edges = JSON.parse(document.getElementById('one-mode-edges').textContent);
+    
+        // Create a new Cytoscape instance for one-mode graph
+        var cyOne = window.cyOne = cytoscape({
+            container: document.getElementById('one-mode-container'),
+            ready: function(){},
+            style: [
+                {
+                    selector: ".author", 
+                    css : 
+                    {
+                        "background-color": "lightblue", 
+                        "label": "data(label)", 
+                        'color': '#fff',
+                        "font-size": "10px",
+                    }
+                },
+                {
+                    selector: 'edge', 
+                    css: 
+                    {
+                        "line-color": "#aaa", 
+                        "label": "data(weight)", 
+                        'color': '#fff',
                     }
                 }
-            },
-            {
-                content: 'isolate node',
-                select: function(ele){
-                    let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
-                    if (cyMulti.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
-
-                        cyMulti.elements().not(connectedNodesAndEdges).show();
-                        cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
-
-                    } else {
-                        cyMulti.elements().not(connectedNodesAndEdges).hide();
-                        cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
-                    }
-                }
-            },
-            {
-                content: 'change shape',
-                select: function(ele){
-                    if (ele.style('shape') === 'square') {
-                        ele.style('shape', 'ellipse');
-                    } else {
-                        ele.style('shape', 'square');
-                    }
-                }
-            },
-            {
-                content: 'mark node',
-                select: function(ele){
-                    if (ele.style('background-color') === 'rgb(255,0,0)') {
-                        ele.style('background-color', ele.data('originalColor'));
-                    } else {
-                        ele.style('background-color', 'red');
-                    }
-                }
-            },
-            {
-                content: 'delete',
-                select: function(ele){
-                    ele.hide();
-                    ele.style('visibility', 'hidden');
-                }
-            },
-        ]
-    });
-
-    cyMulti.cxtmenu({
-        selector: 'core',
-        commands: [
-            {
-                content: 'bg1',
-                select: function(){
-                    for (let node of cyMulti.nodes()) {
-                        if (node.style('background-color') === 'rgb(173,216,230)') {
-                            node.style('background-color', node.data('originalColor'));
-                        } else {
-                            node.style('background-color', 'rgb(173,216,230)');
-                        }
-                    }
-                }
-            },
-            {
-                content: 'bg2',
-                select: function(){
-                    for (let node of cyMulti.nodes()) {
-                        if (node.style('background-color') === 'rgb(144,238,144)') {
-                            node.style('background-color', node.data('originalColor'));
-                        } else {
-                            node.style('background-color', 'rgb(144,238,144)');
-                        }
-                    }
-                }
-            },
-            {
-                content: 'bring back nodes',
-                select: function(){
-                    cyMulti.elements().show();
-                    cyMulti.elements().style('visibility', 'visible');
-                }
+            ],
+            layout: {name: 'cose'},
+            elements: {
+                nodes: one_mode_nodes,
+                edges: one_mode_edges
             }
-        ]
-    });
+        });
+    
+        // Store original colors for one-mode graph
+        cyOne.nodes().forEach(node => {
+            node.data('originalColor', node.style('background-color'));
+        });
+        
+        // Context menu for graphs
+        cyMulti.cxtmenu({
+            selector: 'node, edge',
+            commands: [
+                {
+                    content: 'change size',
+                    select: function(ele){
+                        if (ele.style('width') === '100'){
+                            ele.animate({
+                                style: { 'width': '50px', 'height': '50px' }
+                            }, { duration: 500 });
+                        } else {
+                            ele.animate({
+                                style: { 'width': '100px', 'height': '100px' }
+                            }, { duration: 500 });
+                        }
+                    }
+                },
+                {
+                    content: 'isolate node',
+                    select: function(ele){
+                        let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
+                        if (cyMulti.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
+
+                            cyMulti.elements().not(connectedNodesAndEdges).show();
+                            cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+
+                        } else {
+                            cyMulti.elements().not(connectedNodesAndEdges).hide();
+                            cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+                        }
+                    }
+                },
+                {
+                    content: 'change shape',
+                    select: function(ele){
+                        if (ele.style('shape') === 'square') {
+                            ele.style('shape', 'ellipse');
+                        } else {
+                            ele.style('shape', 'square');
+                        }
+                    }
+                },
+                {
+                    content: 'mark node',
+                    select: function(ele){
+                        if (ele.style('background-color') === 'rgb(255,0,0)') {
+                            ele.style('background-color', ele.data('originalColor'));
+                        } else {
+                            ele.style('background-color', 'red');
+                        }
+                    }
+                },
+                {
+                    content: 'delete',
+                    select: function(ele){
+                        ele.hide();
+                        ele.style('visibility', 'hidden');
+                    }
+                },
+            ]
+        });
+
+        cyMulti.cxtmenu({
+            selector: 'core',
+            commands: [
+                {
+                    content: 'bg1',
+                    select: function(){
+                        for (let node of cyMulti.nodes()) {
+                            if (node.style('background-color') === 'rgb(173,216,230)') {
+                                node.style('background-color', node.data('originalColor'));
+                            } else {
+                                node.style('background-color', 'rgb(173,216,230)');
+                            }
+                        }
+                    }
+                },
+                {
+                    content: 'bg2',
+                    select: function(){
+                        for (let node of cyMulti.nodes()) {
+                            if (node.style('background-color') === 'rgb(144,238,144)') {
+                                node.style('background-color', node.data('originalColor'));
+                            } else {
+                                node.style('background-color', 'rgb(144,238,144)');
+                            }
+                        }
+                    }
+                },
+                {
+                    content: 'bring back nodes',
+                    select: function(){
+                        cyMulti.elements().show();
+                        cyMulti.elements().style('visibility', 'visible');
+                    }
+                },
+                {
+                    content: 'reset colors',
+                    select: function(){
+                        for (let node of cyMulti.nodes()) {
+                            node.style('background-color', node.data('originalColor'));
+                        }
+                    }
+                }
+            ]
+        });
+    }, 1);
 };
