@@ -1,9 +1,9 @@
 function initializeCytoscape() {
-    // Delay the initialization to ensure that elements are available in the DOM
-    var nodes = JSON.parse(document.getElementById('multi-mode-nodes').textContent);
-    var edges = JSON.parse(document.getElementById('multi-mode-edges').textContent);
+    var multi_mode_nodes = JSON.parse(document.getElementById('multi-mode-nodes').textContent);
+    var multi_mode_edges = JSON.parse(document.getElementById('multi-mode-edges').textContent);
     
-    var cy = window.cy = cytoscape({
+    // Create a new Cytoscape instance for multi-mode graph
+    var cyMulti = window.cyMulti = cytoscape({
         container: document.getElementById('multi-mode-container'),
         ready: function(){},
         style: [
@@ -80,17 +80,19 @@ function initializeCytoscape() {
         ],
         layout: {name: 'breadthfirst'},
         elements: {
-            nodes: nodes,
-            edges: edges
+            nodes: multi_mode_nodes,
+            edges: multi_mode_edges
         }
     });
 
     // Store original colors
-    cy.nodes().forEach(node => {
+    cyMulti.nodes().forEach(node => {
         node.data('originalColor', node.style('background-color'));
     });
 
-    cy.cxtmenu({
+
+    // Context menu for graphs
+    cyMulti.cxtmenu({
         selector: 'node, edge',
         commands: [
             {
@@ -111,14 +113,14 @@ function initializeCytoscape() {
                 content: 'isolate node',
                 select: function(ele){
                     let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
-                    if (cy.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
+                    if (cyMulti.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
 
-                        cy.elements().not(connectedNodesAndEdges).show();
-                        cy.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+                        cyMulti.elements().not(connectedNodesAndEdges).show();
+                        cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
 
                     } else {
-                        cy.elements().not(connectedNodesAndEdges).hide();
-                        cy.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+                        cyMulti.elements().not(connectedNodesAndEdges).hide();
+                        cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
                     }
                 }
             },
@@ -152,13 +154,13 @@ function initializeCytoscape() {
         ]
     });
 
-    cy.cxtmenu({
+    cyMulti.cxtmenu({
         selector: 'core',
         commands: [
             {
                 content: 'bg1',
                 select: function(){
-                    for (let node of cy.nodes()) {
+                    for (let node of cyMulti.nodes()) {
                         if (node.style('background-color') === 'rgb(173,216,230)') {
                             node.style('background-color', node.data('originalColor'));
                         } else {
@@ -170,7 +172,7 @@ function initializeCytoscape() {
             {
                 content: 'bg2',
                 select: function(){
-                    for (let node of cy.nodes()) {
+                    for (let node of cyMulti.nodes()) {
                         if (node.style('background-color') === 'rgb(144,238,144)') {
                             node.style('background-color', node.data('originalColor'));
                         } else {
@@ -182,8 +184,8 @@ function initializeCytoscape() {
             {
                 content: 'bring back nodes',
                 select: function(){
-                    cy.elements().show();
-                    cy.elements().style('visibility', 'visible');
+                    cyMulti.elements().show();
+                    cyMulti.elements().style('visibility', 'visible');
                 }
             }
         ]

@@ -86,6 +86,7 @@ def layout():
     ]
 
     content = html.Div([
+
                     html.Div([
                         html.Label("Select Modes to Consider:"),
                         dcc.Dropdown(
@@ -95,8 +96,11 @@ def layout():
                                 multi=True
                             ),
                         ], className="ms-3", style={"width": "48%"}),
+
                     dbc.Row([
+
                         dbc.Col([
+
                             dbc.Card([
                                 dbc.CardHeader("Multi-Mode Graph", 
                                                 className="text-center",
@@ -106,6 +110,7 @@ def layout():
                                     html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
+
                             dbc.Row([
                                 dmc.Title("Multi-Mode Graph Data", order=3),
                                 dbc.Card(style={"width": "350px", "height":"250px"}, outline=True, color="primary", 
@@ -120,7 +125,9 @@ def layout():
                                 ])
                             ], className="ms-3", id="multi-mode-jsons"),
                         ]),
+
                         dbc.Col([
+
                             dbc.Card([
                                 dbc.CardHeader("One-Mode Graph",
                                             className="text-center",
@@ -135,6 +142,7 @@ def layout():
                                     )
                                 )
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
+
                             dbc.Row([
                                 dmc.Title("One-Mode Graph Data", order=3),
                                 dbc.Card(style={"width": "350px", "height":"250px"}, outline=True, color="primary", 
