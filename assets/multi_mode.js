@@ -15,16 +15,16 @@ function initializeCytoscape() {
                     'background-color': 'lightblue',
                     'color': '#fff',
                     'shape': 'ellipse',
-                    'width': '50px',
-                    'height': '50px'
+                    'width': '50',
+                    'height': '50'
                 }
             },
             {
                 selector: '.author',
                 css: {
                     'background-color': 'lightblue',
-                    'width': '100px',
-                    'height': '100px'
+                    'width': '100',
+                    'height': '100'
                 }
             },
             {
@@ -76,6 +76,12 @@ function initializeCytoscape() {
                 css: {
                     'background-color': '#4c7dab'
                 }
+            },
+            {
+                selector: 'edge:selected',
+                css: {
+                    'line-color': '#4c7dab'
+                }
             }
         ],
         layout: {name: 'breadthfirst'},
@@ -107,7 +113,9 @@ function initializeCytoscape() {
                         "background-color": "lightblue", 
                         "label": "data(label)", 
                         'color': '#fff',
-                        "font-size": "10px",
+                        "font-size": "20px",
+                        'width': '100',
+                        'height': '100'
                     }
                 },
                 {
@@ -116,7 +124,20 @@ function initializeCytoscape() {
                     {
                         "line-color": "#aaa", 
                         "label": "data(weight)", 
+                        "font-size": "20px",
                         'color': '#fff',
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    css: {
+                        'background-color': '#4c7dab'
+                    }
+                },
+                {
+                    selector: 'edge:selected',
+                    css: {
+                        'line-color': '#4c7dab'
                     }
                 }
             ],
@@ -131,113 +152,201 @@ function initializeCytoscape() {
         cyOne.nodes().forEach(node => {
             node.data('originalColor', node.style('background-color'));
         });
-        
-        // Context menu for graphs
-        cyMulti.cxtmenu({
-            selector: 'node, edge',
-            commands: [
-                {
-                    content: 'change size',
-                    select: function(ele){
-                        if (ele.style('width') === '100'){
-                            ele.animate({
-                                style: { 'width': '50px', 'height': '50px' }
-                            }, { duration: 500 });
-                        } else {
-                            ele.animate({
-                                style: { 'width': '100px', 'height': '100px' }
-                            }, { duration: 500 });
-                        }
-                    }
-                },
-                {
-                    content: 'isolate node',
-                    select: function(ele){
-                        let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
-                        if (cyMulti.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden') {
 
-                            cyMulti.elements().not(connectedNodesAndEdges).show();
-                            cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+        // Synchronize node selection between the two graphs
+        function syncSelection(cyFrom, cyTo) {
+            cyFrom.on('select unselect', 'node', function(evt) {
+                let node = evt.target;
+                let correspondingNode = cyTo.getElementById(node.id());
+                if (node.selected()) {
+                    correspondingNode.select();
+                } else {
+                    correspondingNode.unselect();
+                }
+            });
+        }
 
-                        } else {
-                            cyMulti.elements().not(connectedNodesAndEdges).hide();
-                            cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
-                        }
-                    }
-                },
-                {
-                    content: 'change shape',
-                    select: function(ele){
-                        if (ele.style('shape') === 'square') {
-                            ele.style('shape', 'ellipse');
-                        } else {
-                            ele.style('shape', 'square');
-                        }
-                    }
-                },
-                {
-                    content: 'mark node',
-                    select: function(ele){
-                        if (ele.style('background-color') === 'rgb(255,0,0)') {
-                            ele.style('background-color', ele.data('originalColor'));
-                        } else {
-                            ele.style('background-color', 'red');
-                        }
-                    }
-                },
-                {
-                    content: 'delete',
-                    select: function(ele){
-                        ele.hide();
-                        ele.style('visibility', 'hidden');
-                    }
-                },
-            ]
-        });
+        // Apply synchronization
+        syncSelection(cyMulti, cyOne);
+        syncSelection(cyOne, cyMulti);
 
-        cyMulti.cxtmenu({
-            selector: 'core',
-            commands: [
-                {
-                    content: 'bg1',
-                    select: function(){
-                        for (let node of cyMulti.nodes()) {
-                            if (node.style('background-color') === 'rgb(173,216,230)') {
-                                node.style('background-color', node.data('originalColor'));
-                            } else {
-                                node.style('background-color', 'rgb(173,216,230)');
-                            }
+        // Synchronize node and edge selection between multi-mode and one-mode graphs
+        function syncNodeAndEdgeSelection(cyMulti, cyOne) {
+            // When a node is selected in multi-mode graph
+            cyMulti.on('select', 'node', function(evt) {
+                let node = evt.target;
+                if (!node.hasClass('author')) {
+                    cyOne.edges().forEach(edge => {
+                        let sharedNodes = edge.data('shared');
+                        if (sharedNodes && sharedNodes.includes(node.id())) {
+                            edge.select();
                         }
-                    }
-                },
-                {
-                    content: 'bg2',
-                    select: function(){
-                        for (let node of cyMulti.nodes()) {
-                            if (node.style('background-color') === 'rgb(144,238,144)') {
-                                node.style('background-color', node.data('originalColor'));
-                            } else {
-                                node.style('background-color', 'rgb(144,238,144)');
-                            }
+                    });
+                }
+            });
+
+            // When an edge is selected in one-mode graph
+            cyOne.on('select', 'edge', function(evt) {
+                let edge = evt.target;
+                let sharedNodes = edge.data('shared');
+                if (sharedNodes) {
+                    sharedNodes.forEach(nodeId => {
+                        let correspondingNode = cyMulti.getElementById(nodeId);
+                        correspondingNode.select();
+                    });
+                }
+            });
+
+            // When an edge is unselected in one-mode graph
+            cyOne.on('unselect', 'edge', function(evt) {
+                let edge = evt.target;
+                let sharedNodes = edge.data('shared');
+                if (sharedNodes) {
+                    sharedNodes.forEach(nodeId => {
+                        let correspondingNode = cyMulti.getElementById(nodeId);
+                        correspondingNode.unselect();
+                    });
+                }
+            });
+
+            // When a node is unselected in multi-mode graph
+            cyMulti.on('unselect', 'node', function(evt) {
+                let node = evt.target;
+                if (!node.hasClass('author')) {
+                    cyOne.edges().forEach(edge => {
+                        let sharedNodes = edge.data('shared');
+                        if (sharedNodes && sharedNodes.includes(node.id())) {
+                            edge.unselect();
                         }
-                    }
-                },
-                {
-                    content: 'bring back nodes',
-                    select: function(){
-                        cyMulti.elements().show();
-                        cyMulti.elements().style('visibility', 'visible');
-                    }
-                },
-                {
-                    content: 'reset colors',
-                    select: function(){
-                        for (let node of cyMulti.nodes()) {
-                            node.style('background-color', node.data('originalColor'));
-                        }
+                    });
+                }
+            });
+        }
+
+        // Apply synchronization
+        syncNodeAndEdgeSelection(cyMulti, cyOne);
+
+        // Define context menu commands
+        const contextMenuCommands = [
+            {
+                content: 'change size',
+                select: function(ele){
+                    if (ele.style('width') === '100'){
+                        cyMulti.getElementById(ele.id()).animate({
+                            style: { 'width': '50', 'height': '50' }
+                        }, { duration: 500 });
+                        cyOne.getElementById(ele.id()).animate({
+                            style: { 'width': '50', 'height': '50' }
+                        }, { duration: 500 });
+                    } else {
+                        cyMulti.getElementById(ele.id()).animate({
+                            style: { 'width': '100', 'height': '100' }
+                        }, { duration: 500 });
+                        cyOne.getElementById(ele.id()).animate({
+                            style: { 'width': '100', 'height': '100' }
+                        }, { duration: 500 });
                     }
                 }
-            ]
+            },
+            {
+                content: 'isolate node',
+                select: function(ele){
+                    let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
+                    if (cyMulti.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden' 
+                        || cyOne.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden'){
+
+                        cyMulti.elements().not(connectedNodesAndEdges).show();
+                        cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+
+                        cyOne.elements().not(connectedNodesAndEdges).show();
+                        cyOne.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
+
+                    } else {
+                        cyMulti.elements().not(connectedNodesAndEdges).hide();
+                        cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+
+                        cyOne.elements().not(connectedNodesAndEdges).hide();
+                        cyOne.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+                    }
+                }
+            },
+            {
+                content: 'change shape',
+                select: function(ele){
+                    if (ele.style('shape') === 'square') {
+                        cyMulti.getElementById(ele.id()).style('shape', 'ellipse');
+                        cyOne.getElementById(ele.id()).style('shape', 'ellipse');
+                    } else {
+                        cyMulti.getElementById(ele.id()).style('shape', 'square');
+                        cyOne.getElementById(ele.id()).style('shape', 'square');
+                    }
+                }
+            },
+            {
+                content: 'mark node',
+                select: function(ele){
+                    if (ele.style('background-color') === 'rgb(255,0,0)') {
+                        cyMulti.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
+                        cyOne.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
+                    } else {
+                        cyMulti.getElementById(ele.id()).style('background-color', 'red');
+                        cyOne.getElementById(ele.id()).style('background-color', 'red');
+                    }
+                }
+            },
+            {
+                content: 'delete',
+                select: function(ele){
+                    cyMulti.getElementById(ele.id()).hide();
+                    cyMulti.getElementById(ele.id()).style('visibility', 'hidden');
+                    cyOne.getElementById(ele.id()).hide();
+                    cyOne.getElementById(ele.id()).style('visibility', 'hidden');
+                }
+            }
+        ];
+
+        // Apply context menu to both graphs
+        cyMulti.cxtmenu({
+            selector: 'node',
+            commands: contextMenuCommands
+        });
+
+        cyOne.cxtmenu({
+            selector: 'node',
+            commands: contextMenuCommands
+        });
+
+        // Core context menu
+        const coreContextMenuCommands = [
+            {
+                content: 'bring back nodes',
+                select: function(){
+                    cyMulti.nodes().show();
+                    cyMulti.nodes().style('visibility', 'visible');
+                    cyOne.nodes().show();
+                    cyOne.nodes().style('visibility', 'visible');
+                }
+            },
+            {
+                content: 'reset colors',
+                select: function(){
+                    cyMulti.nodes().forEach(node => {
+                        node.style('background-color', node.data('originalColor'));
+                        cyOne.getElementById(node.id()).style('background-color', node.data('originalColor'));
+                    });
+                }
+            }
+        ];
+
+        // Apply core context menu to cyMulti and cyOne
+        cyMulti.cxtmenu({
+            selector: 'core',
+            commands: coreContextMenuCommands
+        });
+
+        cyOne.cxtmenu({
+            selector: 'core',
+            commands: coreContextMenuCommands
         });
     }, 1);
 };

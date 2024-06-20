@@ -24,17 +24,6 @@ multi_mode_edges = [
 
 # Function to perform the n-mode to one-mode transformation
 def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
-    """Transforms an n-mode graph to a one-mode graph by considering the shared neighbors between target_mode nodes.
-    
-    Args:
-        nodes (dict): A dictionary of nodes for each mode.
-        edges (list): A list of edges between nodes in different modes.
-        target_mode (str): The target mode to consider.
-        other_modes (list): A list of modes to consider for shared neighbors.
-        
-    Returns:
-        list: A list of edges between target_mode nodes.
-    """
     target_nodes = nodes[target_mode]
     other_nodes = {node for mode in other_modes for node in nodes[mode]}
     
@@ -48,7 +37,7 @@ def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
                     and ((node2, other_node) in edges or (other_node, node2) in edges)
                 ]
                 if shared_neighbors:
-                    one_mode_edges.append((node1, node2, len(shared_neighbors)))
+                    one_mode_edges.append((node1, node2, len(shared_neighbors), shared_neighbors))
     return one_mode_edges
 
 def layout():
@@ -63,27 +52,7 @@ def layout():
         "color": "#FFFFFF",
     }
 
-    one_mode_stylsheet =  [
-        {
-            "selector": ".author", 
-            "style": 
-            {
-                "background-color": "lightblue", 
-                "label": "data(label)", 
-                'color': '#fff',
-                "font-size": "10px",
-            }
-        },
-        {
-            "selector": "edge", 
-            "style": 
-            {
-                "line-color": "#aaa", 
-                "label": "data(weight)", 
-                'color': '#fff'
-            }
-        }
-    ]
+    nav_bar = navbar.draw_navbar()
 
     content = html.Div([
 
@@ -98,9 +67,7 @@ def layout():
                         ], className="ms-3", style={"width": "48%"}),
 
                     dbc.Row([
-
                         dbc.Col([
-
                             dbc.Card([
                                 dbc.CardHeader("Multi-Mode Graph", 
                                                 className="text-center",
@@ -127,7 +94,6 @@ def layout():
                         ]),
 
                         dbc.Col([
-
                             dbc.Card([
                                 dbc.CardHeader("One-Mode Graph", 
                                                 className="text-center",
@@ -154,7 +120,7 @@ def layout():
                         ]),
                     ])
                 ])
-    return html.Div([navbar.draw_navbar(), content])
+    return html.Div([nav_bar, content])
 
 @callback(
     [Output("one-mode-nodes", "children"),
@@ -163,7 +129,7 @@ def layout():
 )
 def update_one_mode_graph_and_data(selected_modes):
     one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
-    one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2]}} for edge in one_mode_edges]
+    one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2], "shared": edge[3]}} for edge in one_mode_edges]
     one_mode_nodes_data = [{"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]]
     return json.dumps(one_mode_nodes_data, indent=2), json.dumps(one_mode_edges_data, indent=2)
 
