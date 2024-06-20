@@ -74,7 +74,9 @@ function initializeCytoscape() {
             {
                 selector: 'node:selected',
                 css: {
-                    'background-color': '#4c7dab'
+                    'background-color': function(ele) {
+                        return chroma(ele.data('originalColor')).darken(2).hex();
+                    }
                 }
             },
             {
@@ -131,7 +133,9 @@ function initializeCytoscape() {
                 {
                     selector: 'node:selected',
                     css: {
-                        'background-color': '#4c7dab'
+                        'background-color': function(ele) {
+                            return chroma(ele.data('originalColor')).darken(2).hex();
+                        }
                     }
                 },
                 {
