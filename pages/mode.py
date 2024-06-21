@@ -88,7 +88,7 @@ def layout():
                                             dbc.Tab(html.Pre(id="multi-mode-nodes", children=json.dumps(multi_mode_nodes, indent=2)), label="Nodes")
                                         ])
                                     ]),
-                                    dcc.Clipboard(target_id="multi-mode-scroll-area")
+                                    dcc.Clipboard(target_id="multi-mode-scroll-area", className="ms-auto me-3")
                                 ])
                             ], className="ms-3", id="multi-mode-jsons"),
                         ]),
@@ -114,7 +114,7 @@ def layout():
                                             dbc.Tab(html.Pre(id="one-mode-nodes"),label="Nodes")
                                         ])
                                     ]),
-                                    dcc.Clipboard(target_id="one-mode-scroll-area")
+                                    dcc.Clipboard(target_id="one-mode-scroll-area", className="ms-auto me-3")
                                 ])
                             ], className="ms-3", id="one-mode-jsons"),
                         ]),
