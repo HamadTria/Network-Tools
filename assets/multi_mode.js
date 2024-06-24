@@ -239,6 +239,7 @@ function initializeCytoscape() {
                         cyMulti.getElementById(ele.id()).animate({
                             style: { 'width': '50', 'height': '50' }
                         }, { duration: 500 });
+
                         cyOne.getElementById(ele.id()).animate({
                             style: { 'width': '50', 'height': '50' }
                         }, { duration: 500 });
@@ -246,6 +247,7 @@ function initializeCytoscape() {
                         cyMulti.getElementById(ele.id()).animate({
                             style: { 'width': '100', 'height': '100' }
                         }, { duration: 500 });
+
                         cyOne.getElementById(ele.id()).animate({
                             style: { 'width': '100', 'height': '100' }
                         }, { duration: 500 });
@@ -279,9 +281,11 @@ function initializeCytoscape() {
                 select: function(ele){
                     if (ele.style('shape') === 'square') {
                         cyMulti.getElementById(ele.id()).style('shape', 'ellipse');
+
                         cyOne.getElementById(ele.id()).style('shape', 'ellipse');
                     } else {
                         cyMulti.getElementById(ele.id()).style('shape', 'square');
+
                         cyOne.getElementById(ele.id()).style('shape', 'square');
                     }
                 }
@@ -291,9 +295,11 @@ function initializeCytoscape() {
                 select: function(ele){
                     if (ele.style('background-color') === 'rgb(255,0,0)') {
                         cyMulti.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
+
                         cyOne.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
                     } else {
                         cyMulti.getElementById(ele.id()).style('background-color', 'red');
+                        
                         cyOne.getElementById(ele.id()).style('background-color', 'red');
                     }
                 }
@@ -303,6 +309,7 @@ function initializeCytoscape() {
                 select: function(ele){
                     cyMulti.getElementById(ele.id()).hide();
                     cyMulti.getElementById(ele.id()).style('visibility', 'hidden');
+
                     cyOne.getElementById(ele.id()).hide();
                     cyOne.getElementById(ele.id()).style('visibility', 'hidden');
                 }
