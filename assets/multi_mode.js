@@ -67,7 +67,7 @@ function initializeCytoscape() {
                 selector: 'edge',
                 css: {
                     'line-color': '#aaa',
-                    'curve-style': 'bezier', // bezier curve control point to show curvature
+                    'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle'
                 }
             },
@@ -127,6 +127,7 @@ function initializeCytoscape() {
                         "line-color": "#aaa", 
                         "label": "data(weight)", 
                         "font-size": "20px",
+                        'curve-style': 'unbundled-bezier',
                         'color': '#fff',
                     }
                 },
@@ -299,7 +300,7 @@ function initializeCytoscape() {
                         cyOne.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
                     } else {
                         cyMulti.getElementById(ele.id()).style('background-color', 'red');
-                        
+
                         cyOne.getElementById(ele.id()).style('background-color', 'red');
                     }
                 }
