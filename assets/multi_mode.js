@@ -235,7 +235,7 @@ function initializeCytoscape() {
             {
                 content: 'change size',
                 select: function(ele){
-                    if (ele.style('width') === '100'){
+                    if (ele.style('width') === '100' || ele.style('width') === '100px'){
                         cyMulti.getElementById(ele.id()).animate({
                             style: { 'width': '50', 'height': '50' }
                         }, { duration: 500 });
@@ -243,7 +243,6 @@ function initializeCytoscape() {
                             style: { 'width': '50', 'height': '50' }
                         }, { duration: 500 });
                     } else {
-                        
                         cyMulti.getElementById(ele.id()).animate({
                             style: { 'width': '100', 'height': '100' }
                         }, { duration: 500 });
