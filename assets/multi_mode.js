@@ -157,7 +157,7 @@ function initializeCytoscape() {
             node.data('originalColor', node.style('background-color'));
         });
 
-        // Synchronize node selection between the two graphs
+        // Synchronize author node selection between the two graphs
         function syncSelection(cyFrom, cyTo) {
             cyFrom.on('select unselect', 'node', function(evt) {
                 let node = evt.target;
@@ -243,6 +243,7 @@ function initializeCytoscape() {
                             style: { 'width': '50', 'height': '50' }
                         }, { duration: 500 });
                     } else {
+                        
                         cyMulti.getElementById(ele.id()).animate({
                             style: { 'width': '100', 'height': '100' }
                         }, { duration: 500 });
@@ -326,8 +327,13 @@ function initializeCytoscape() {
                 content: 'bring back nodes',
                 select: function(){
                     cyMulti.nodes().show();
+                    cyMulti.edges().show();
+                    cyMulti.edges().style('visibility', 'visible');
                     cyMulti.nodes().style('visibility', 'visible');
+
                     cyOne.nodes().show();
+                    cyOne.edges().show();
+                    cyOne.edges().style('visibility', 'visible');
                     cyOne.nodes().style('visibility', 'visible');
                 }
             },
