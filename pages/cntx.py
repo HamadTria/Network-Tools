@@ -9,7 +9,6 @@ def layout():
     cyto_div = html.Div([
                     html.Div(id="dummy-output-cyto"),
                     html.Div(id="cyto-container", style={"width": "100%", "height": "800px", "display": "inline-block"}),
-
                     dbc.Col(
                         html.Div(id="cyto-small-container", style={"width": "100%", "height": "200px", "display": "inline-block"}), 
                         width=3, lg = 1

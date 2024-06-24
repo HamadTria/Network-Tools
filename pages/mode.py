@@ -42,6 +42,8 @@ def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
     return one_mode_edges
 
 def layout():
+    nav_bar = navbar.draw_navbar()
+
     card_style = {
         "margin": "1rem",
         "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
@@ -53,10 +55,7 @@ def layout():
         "color": "#FFFFFF",
     }
 
-    nav_bar = navbar.draw_navbar()
-
     content = html.Div([
-
                     html.Div([
                         html.Label("Select Modes to Consider:"),
                         dcc.Dropdown(
@@ -66,7 +65,7 @@ def layout():
                                 multi=True
                             ),
                         ], className="ms-3", style={"width": "48%"}),
-
+                        
                     dbc.Row([
                         dbc.Col([
                             dbc.Card([
@@ -170,9 +169,12 @@ clientside_callback(
 )
 def update_one_mode_graph_and_data(selected_modes):
     one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
+
+    # Create JSON data for one-mode graph
     one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2], "shared": edge[3]}} for edge in one_mode_edges]
     one_mode_nodes_data = [{"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]]
 
+    # Create JSON data for filter-mode graph
     filter_mode_nodes = [
         {"data": {"id": node, "label": node}, "classes": mode.lower()} 
         for mode, node_list in nodes.items() if mode in selected_modes + ["Author"]

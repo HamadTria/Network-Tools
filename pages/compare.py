@@ -28,13 +28,12 @@ def layout():
     card_content_cyto = [
         dbc.CardHeader([
             html.Img(src="/assets/cytoscape.png",
-                        style={
-                            "height": "2rem",
-                            "marginRight": "10px"
-                        }), "Cytoscape"
-        ],
-                        className="text-center",
-                        style=card_header_style),
+                    style={
+                        "height": "2rem",
+                        "marginRight": "10px"
+                    }),
+                    "Cytoscape"
+        ],className="text-center",style=card_header_style),
         dbc.CardBody(cytograph)
     ]
 
@@ -57,22 +56,24 @@ def layout():
     ]
 
     contents = dbc.Row([
-                        dbc.Col([dbc.Card(card_content_sigma, 
-                                        color="primary",
-                                        outline=True,
-                                        style=card_style),
-                                dbc.Button(dbc.NavLink("Discover more on sigma.js", 
-                                                       href=page_registry['pages.sigma']['path']), 
-                                                       className="ms-3"),
-                        ]), 
-                        dbc.Col([dbc.Card(card_content_cyto,
-                                        color="primary",
-                                        outline=True,
-                                        style=card_style),
-                                dbc.Button(dbc.NavLink("Discover more on cytoscape", 
-                                                       href=page_registry['pages.cytoscape']['path']), 
-                                                       className="ms-3"),
-                        ])
+                    dbc.Col([
+                        dbc.Card(card_content_sigma, 
+                                color="primary",
+                                outline=True,
+                                style=card_style),
+                        dbc.Button(dbc.NavLink("Discover more on sigma.js", 
+                                               href=page_registry['pages.sigma']['path']), 
+                                               className="ms-3"),
+                    ]), 
+                    dbc.Col([
+                        dbc.Card(card_content_cyto,
+                                color="primary",
+                                outline=True,
+                                style=card_style),
+                        dbc.Button(dbc.NavLink("Discover more on cytoscape", 
+                                               href=page_registry['pages.cytoscape']['path']), 
+                                               className="ms-3"),
+                    ])
                 ])
     return html.Div([nav_bar, contents])
 
