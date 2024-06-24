@@ -98,7 +98,7 @@ function initializeCytoscape() {
         node.data('originalColor', node.style('background-color'));
     });
     
-    // Delay one-mode graph to wait for dropdown menu callback
+    // Delay one-mode and filter-mode graphs to wait for dropdown menu callback
     setTimeout(function() {
         var one_mode_nodes = JSON.parse(document.getElementById('one-mode-nodes').textContent);
         var one_mode_edges = JSON.parse(document.getElementById('one-mode-edges').textContent);
@@ -158,6 +158,105 @@ function initializeCytoscape() {
             node.data('originalColor', node.style('background-color'));
         });
 
+        var filter_mode_nodes = JSON.parse(document.getElementById('filter-mode-nodes').textContent);
+        var filter_mode_edges = JSON.parse(document.getElementById('filter-mode-edges').textContent);
+
+        // Create a new Cytoscape instance for filter-mode graph
+        var cyFilter = window.cyFilter = cytoscape({
+            container: document.getElementById('filter-mode-container'),
+            ready: function(){},
+            layout: {name: 'breadthfirst'},
+            style: [
+                {
+                    selector: 'node',
+                    css: {
+                        'content': 'data(label)',
+                        "font-size": "30px",
+                        'background-color': 'lightblue',
+                        'color': '#fff',
+                        'shape': 'ellipse',
+                        'width': '50',
+                        'height': '50'
+                    }
+                },
+                {
+                    selector: '.author',
+                    css: {
+                        'background-color': 'lightblue',
+                        'width': '100',
+                        'height': '100'
+                    }
+                },
+                {
+                    selector: '.paper',
+                    css: {
+                        'background-color': 'lightgreen',
+                    }
+                },
+                {
+                    selector: '.conference',
+                    css: {
+                        'background-color': 'purple',
+                    }
+                },
+                {
+                    selector: '.book',
+                    css: {
+                        'background-color': 'lightyellow',
+                    }
+                },
+                {
+                    selector: '.institution',
+                    css: {
+                        'background-color': 'lightpink',
+                    }
+                },
+                {
+                    selector: '.journal',
+                    css: {
+                        'background-color': 'orange',
+                    }
+                },
+                {
+                    selector: '.publisher',
+                    css: {
+                        'background-color': 'lightcoral',
+                    }
+                },
+                {
+                    selector: 'edge',
+                    css: {
+                        'line-color': '#aaa',
+                        'curve-style': 'bezier',
+                        'target-arrow-shape': 'triangle'
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    css: {
+                        'background-color': function(ele) {
+                            return chroma(ele.data('originalColor')).darken(2).hex();
+                        }
+                    }
+                },
+                {
+                    selector: 'edge:selected',
+                    css: {
+                        'line-color': '#4c7dab'
+                    }
+                }
+            ],
+            elements: {
+                nodes: filter_mode_nodes,
+                edges: filter_mode_edges
+            }
+        });
+
+        // Store original colors for filter-mode graph
+        cyFilter.nodes().forEach(node => {
+            node.data('originalColor', node.style('background-color'));
+        });
+
         // Synchronize author node selection between the two graphs
         function syncSelection(cyFrom, cyTo) {
             cyFrom.on('select unselect', 'node', function(evt) {
@@ -174,6 +273,8 @@ function initializeCytoscape() {
         // Apply synchronization
         syncSelection(cyMulti, cyOne);
         syncSelection(cyOne, cyMulti);
+        syncSelection(cyMulti, cyFilter);
+        syncSelection(cyFilter, cyMulti);
 
         // Synchronize node and edge selection between multi-mode and one-mode graphs
         function syncNodeAndEdgeSelection(cyMulti, cyOne) {
@@ -230,6 +331,7 @@ function initializeCytoscape() {
 
         // Apply synchronization
         syncNodeAndEdgeSelection(cyMulti, cyOne);
+        syncNodeAndEdgeSelection(cyMulti, cyFilter);
 
         // Define context menu commands
         const contextMenuCommands = [
@@ -244,12 +346,20 @@ function initializeCytoscape() {
                         cyOne.getElementById(ele.id()).animate({
                             style: { 'width': '50', 'height': '50' }
                         }, { duration: 500 });
+
+                        cyFilter.getElementById(ele.id()).animate({
+                            style: { 'width': '50', 'height': '50' }
+                        }, { duration: 500 });
                     } else {
                         cyMulti.getElementById(ele.id()).animate({
                             style: { 'width': '100', 'height': '100' }
                         }, { duration: 500 });
 
                         cyOne.getElementById(ele.id()).animate({
+                            style: { 'width': '100', 'height': '100' }
+                        }, { duration: 500 });
+
+                        cyFilter.getElementById(ele.id()).animate({
                             style: { 'width': '100', 'height': '100' }
                         }, { duration: 500 });
                     }
@@ -260,7 +370,8 @@ function initializeCytoscape() {
                 select: function(ele){
                     let connectedNodesAndEdges = ele.connectedEdges().connectedNodes().union(ele.connectedEdges()).union(ele);
                     if (cyMulti.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden' 
-                        || cyOne.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden'){
+                        || cyOne.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden'
+                        || cyFilter.elements().not(connectedNodesAndEdges).style('visibility') === 'hidden'){
 
                         cyMulti.elements().not(connectedNodesAndEdges).show();
                         cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
@@ -268,12 +379,17 @@ function initializeCytoscape() {
                         cyOne.elements().not(connectedNodesAndEdges).show();
                         cyOne.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
 
+                        cyFilter.elements().not(connectedNodesAndEdges).show();
+                        cyFilter.elements().not(connectedNodesAndEdges).style('visibility', 'visible');
                     } else {
                         cyMulti.elements().not(connectedNodesAndEdges).hide();
                         cyMulti.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
 
                         cyOne.elements().not(connectedNodesAndEdges).hide();
                         cyOne.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
+
+                        cyFilter.elements().not(connectedNodesAndEdges).hide();
+                        cyFilter.elements().not(connectedNodesAndEdges).style('visibility', 'hidden');
                     }
                 }
             },
@@ -284,10 +400,14 @@ function initializeCytoscape() {
                         cyMulti.getElementById(ele.id()).style('shape', 'ellipse');
 
                         cyOne.getElementById(ele.id()).style('shape', 'ellipse');
+
+                        cyFilter.getElementById(ele.id()).style('shape', 'ellipse');
                     } else {
                         cyMulti.getElementById(ele.id()).style('shape', 'square');
 
                         cyOne.getElementById(ele.id()).style('shape', 'square');
+
+                        cyFilter.getElementById(ele.id()).style('shape', 'square');
                     }
                 }
             },
@@ -298,10 +418,14 @@ function initializeCytoscape() {
                         cyMulti.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
 
                         cyOne.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
+
+                        cyFilter.getElementById(ele.id()).style('background-color', ele.data('originalColor'));
                     } else {
                         cyMulti.getElementById(ele.id()).style('background-color', 'red');
 
                         cyOne.getElementById(ele.id()).style('background-color', 'red');
+
+                        cyFilter.getElementById(ele.id()).style('background-color', 'red');
                     }
                 }
             },
@@ -313,17 +437,25 @@ function initializeCytoscape() {
 
                     cyOne.getElementById(ele.id()).hide();
                     cyOne.getElementById(ele.id()).style('visibility', 'hidden');
+
+                    cyFilter.getElementById(ele.id()).hide();
+                    cyFilter.getElementById(ele.id()).style('visibility', 'hidden');
                 }
             }
         ];
 
-        // Apply context menu to both graphs
+        // Apply context menu to all graphs
         cyMulti.cxtmenu({
             selector: 'node',
             commands: contextMenuCommands
         });
 
         cyOne.cxtmenu({
+            selector: 'node',
+            commands: contextMenuCommands
+        });
+
+        cyFilter.cxtmenu({
             selector: 'node',
             commands: contextMenuCommands
         });
@@ -342,6 +474,11 @@ function initializeCytoscape() {
                     cyOne.edges().show();
                     cyOne.edges().style('visibility', 'visible');
                     cyOne.nodes().style('visibility', 'visible');
+
+                    cyFilter.nodes().show();
+                    cyFilter.edges().show();
+                    cyFilter.edges().style('visibility', 'visible');
+                    cyFilter.nodes().style('visibility', 'visible');
                 }
             },
             {
@@ -350,6 +487,7 @@ function initializeCytoscape() {
                     cyMulti.nodes().forEach(node => {
                         node.style('background-color', node.data('originalColor'));
                         cyOne.getElementById(node.id()).style('background-color', node.data('originalColor'));
+                        cyFilter.getElementById(node.id()).style('background-color', node.data('originalColor'));
                     });
                 }
             }
@@ -362,6 +500,11 @@ function initializeCytoscape() {
         });
 
         cyOne.cxtmenu({
+            selector: 'core',
+            commands: coreContextMenuCommands
+        });
+
+        cyFilter.cxtmenu({
             selector: 'core',
             commands: coreContextMenuCommands
         });
