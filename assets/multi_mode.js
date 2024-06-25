@@ -76,7 +76,9 @@ function initializeCytoscape() {
                 css: {
                     'background-color': function(ele) {
                         return chroma(ele.data('originalColor')).darken(2).hex();
-                    }
+                    },
+                    'border-color': '#4c7dab',
+                    'border-width': '4',
                 }
             },
             {
@@ -136,7 +138,9 @@ function initializeCytoscape() {
                     css: {
                         'background-color': function(ele) {
                             return chroma(ele.data('originalColor')).darken(2).hex();
-                        }
+                        },
+                        'border-color': '#4c7dab',
+                        'border-width': '4',
                     }
                 },
                 {
@@ -236,7 +240,9 @@ function initializeCytoscape() {
                     css: {
                         'background-color': function(ele) {
                             return chroma(ele.data('originalColor')).darken(2).hex();
-                        }
+                        },
+                        'border-color': '#4c7dab',
+                        'border-width': '4',
                     }
                 },
                 {
