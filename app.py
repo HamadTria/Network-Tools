@@ -20,7 +20,7 @@ app.layout = html.Div(
     children=[dcc.Location(id="url"), page_container])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) #, dev_tools_ui=False, dev_tools_props_check=False, dev_tools_serve_dev_bundles=False)
 
 # python -m venv venv
 # source venv/bin/activate

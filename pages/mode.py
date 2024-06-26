@@ -75,6 +75,7 @@ def layout():
                                 dbc.CardBody([
                                     html.Div(id="filter-mode-dummy-output"),
                                     html.Div(id="filter-mode-container", style={"width": "100%", "height": "500px"}),
+                                    dbc.Button("Download Image", id="filter-graph-download-btn", n_clicks=0),
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
                         ]),
@@ -87,6 +88,7 @@ def layout():
                                 dbc.CardBody([
                                     html.Div(id="one-mode-dummy-output"),
                                     html.Div(id="one-mode-container", style={"width": "100%", "height": "500px"}),
+                                    dbc.Button("Download Image", id="one-graph-download-btn", n_clicks=0),
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
                         ]),
@@ -101,6 +103,7 @@ def layout():
                                 dbc.CardBody([
                                     html.Div(id="multi-mode-dummy-output"),
                                     html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
+                                    dbc.Button("Download Image", id="multi-graph-download-btn", n_clicks=0),
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
                         ]),
@@ -158,6 +161,63 @@ clientside_callback(
     Output("multi-mode-dummy-output", "children"),
     [Input("multi-mode-dummy-output", "children"),
     Input("mode-dropdown", "value")]
+)
+
+clientside_callback(
+    """
+    function(n_clicks) {
+        const png = cyFilter.png({ output: 'blob', bg: 'black', full: true });
+        const url = URL.createObjectURL(png);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'filter_mode.jpg';
+
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+    """,
+    Output("filter-mode-dummy-output", "data"),
+    Input("filter-graph-download-btn", "n_clicks"),
+    prevent_initial_call=True
+)
+
+clientside_callback(
+    """
+    function(n_clicks) {
+        const png = cyOne.png({ output: 'blob', bg: 'black', full: true });
+        const url = URL.createObjectURL(png);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'one_mode.jpg';
+
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+    """,
+    Output("one-mode-dummy-output", "data"),
+    Input("one-graph-download-btn", "n_clicks"),
+    prevent_initial_call=True
+)
+
+clientside_callback(
+    """
+    function(n_clicks) {
+        const png = cyMulti.png({ output: 'blob', bg: 'black', full: true });
+        const url = URL.createObjectURL(png);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'multi_mode.jpg';
+
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+    """,
+    Output("multi-mode-dummy-output", "data"),
+    Input("multi-graph-download-btn", "n_clicks"),
+    prevent_initial_call=True
 )
 
 @callback(
