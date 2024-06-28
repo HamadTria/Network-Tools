@@ -74,10 +74,10 @@ function initializeCytoscape() {
             {
                 selector: 'node:selected',
                 css: {
-                    'background-color': function(ele) {
-                        return chroma(ele.data('originalColor')).darken(2).hex();
-                    },
-                    'border-color': '#4c7dab',
+                    // 'background-color': function(ele) {
+                    //     return chroma(ele.data('originalColor')).darken(2).hex();
+                    // },
+                    'border-color': 'red',
                     'border-width': '4',
                 }
             },
@@ -127,19 +127,26 @@ function initializeCytoscape() {
                     css: 
                     {
                         "line-color": "#aaa", 
-                        "label": "data(weight)", 
                         "font-size": "20px",
                         'curve-style': 'unbundled-bezier',
                         'color': '#fff',
                     }
                 },
                 {
+                    selector: '.hasLabel',
+                    css: {
+                      'label': (ele) => {
+                        if(ele.isEdge()) return ele.data('weight');         
+                      }
+                    }
+                },
+                {
                     selector: 'node:selected',
                     css: {
-                        'background-color': function(ele) {
-                            return chroma(ele.data('originalColor')).darken(2).hex();
-                        },
-                        'border-color': '#4c7dab',
+                        // 'background-color': function(ele) {
+                        //     return chroma(ele.data('originalColor')).darken(2).hex();
+                        // },
+                        'border-color': 'red',
                         'border-width': '4',
                     }
                 },
@@ -160,6 +167,11 @@ function initializeCytoscape() {
         // Store original colors for one-mode graph
         cyOne.nodes().forEach(node => {
             node.data('originalColor', node.style('background-color'));
+        });
+
+        // Add label to edges
+        cyOne.edges().forEach(edge => {
+            edge.toggleClass('hasLabel');
         });
 
         var filter_mode_nodes = JSON.parse(document.getElementById('filter-mode-nodes').textContent);
@@ -238,10 +250,10 @@ function initializeCytoscape() {
                 {
                     selector: 'node:selected',
                     css: {
-                        'background-color': function(ele) {
-                            return chroma(ele.data('originalColor')).darken(2).hex();
-                        },
-                        'border-color': '#4c7dab',
+                        // 'background-color': function(ele) {
+                        //     return chroma(ele.data('originalColor')).darken(2).hex();
+                        // },
+                        'border-color': 'red',
                         'border-width': '4',
                     }
                 },
@@ -514,5 +526,53 @@ function initializeCytoscape() {
             selector: 'core',
             commands: coreContextMenuCommands
         });
+
+        const edgesContextMenuCommands = [
+            {
+                content: 'straighten edge',
+                select: function(ele){
+                    if (ele.style('curve-style') === 'unbundled-bezier') {
+                        cyMulti.getElementById(ele.id()).style('curve-style', 'bezier');
+
+                        cyOne.getElementById(ele.id()).style('curve-style', 'bezier');
+
+                        cyFilter.getElementById(ele.id()).style('curve-style', 'bezier');
+                    } else {
+                        cyMulti.getElementById(ele.id()).style('curve-style', 'unbundled-bezier');
+
+                        cyOne.getElementById(ele.id()).style('curve-style', 'unbundled-bezier');
+
+                        cyFilter.getElementById(ele.id()).style('curve-style', 'unbundled-bezier');
+                    }
+                }
+            },
+            {
+                content: 'show weight',
+                select: function(ele){
+                    cyOne.getElementById(ele.id()).toggleClass('hasLabel');
+                    
+                    cyMulti.getElementById(ele.id()).toggleClass('hasLabel');
+
+                    cyFilter.getElementById(ele.id()).toggleClass('hasLabel');
+                }
+            }            
+        ];
+
+        // Apply context menu to all graphs
+        cyMulti.cxtmenu({
+            selector: 'edge',
+            commands: edgesContextMenuCommands
+        });
+
+        cyOne.cxtmenu({
+            selector: 'edge',
+            commands: edgesContextMenuCommands
+        });
+
+        cyFilter.cxtmenu({
+            selector: 'edge',
+            commands: edgesContextMenuCommands
+        });
+
     }, 1);
 };
