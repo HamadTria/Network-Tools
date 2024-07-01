@@ -105,22 +105,13 @@ styles = {
 
 def layout():
     nav_bar = navbar.draw_navbar()
+    card_style = {
+        "margin": "1rem",
+        "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
+    }
     return html.Div(
     [   nav_bar,
         dbc.Row([
-            dbc.Col(html.Div(
-                        children=[
-                            cyto.Cytoscape(
-                                id="cytoscape",
-                                elements=cytoData.default_elements,
-                                stylesheet=default_stylesheet,
-                                style={"height": "95vh", "width": "100%"},
-                                contextMenu=context_menu,
-                            )
-                        ],
-                    ),
-                    width=8
-            ),
             dbc.Col(
                 dbc.Card(
                     html.Div(
@@ -144,7 +135,7 @@ def layout():
                                         "euler",
                                     ),
                                     value="random",
-                                    clearable=False
+                                    clearable=False,
                                 ),
                                 drc.NamedRadioItems(
                                     name="Expand",
@@ -155,9 +146,25 @@ def layout():
                                     value="followers",
                                 ),
                             ]
-                    )
-                )
-            )
+                    ),
+                style=card_style, outline=True, color="primary", className="ms-3")
+            ),
+            dbc.Col(
+                dbc.Card(
+                    html.Div(
+                        children=[
+                            cyto.Cytoscape(
+                                id="cytoscape",
+                                elements=cytoData.default_elements,
+                                stylesheet=default_stylesheet,
+                                style={"height": "1000px", "width": "100%"},
+                                contextMenu=context_menu,
+                            )
+                        ],
+                    ),
+                style=card_style, outline=True, color="primary", className="ms-3"),
+                width=8,
+            ),
         ])
     ]
 )

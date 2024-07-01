@@ -5,14 +5,18 @@ from view import navbar
 register_page(__name__)
 
 def layout():
+    card_style = {
+        "margin": "1rem",
+        "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
+        "width": "300px",
+    }
     nav_bar = navbar.draw_navbar()
     cyto_div = html.Div([
                     html.Div(id="dummy-output-cyto"),
-                    html.Div(id="cyto-container", style={"width": "100%", "height": "800px", "display": "inline-block"}),
-                    dbc.Col(
-                        html.Div(id="cyto-small-container", style={"width": "100%", "height": "200px", "display": "inline-block"}), 
-                        width=3, lg = 1
-                    )
+                    html.Div(id="cyto-container", style={"height": "700px"}),
+                    dbc.Card([
+                        html.Div(id="cyto-small-container", style={"height": "300px", "width": "300px"}),
+                    ], style=card_style, className="ms-auto"),
                 ])
     return html.Div([nav_bar, cyto_div])
 
