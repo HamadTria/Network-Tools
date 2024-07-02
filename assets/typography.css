@@ -1,0 +1,5 @@
+.has-value.Select--single > .Select-control .Select-value .Select-value-label, .has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label {  color: #ffffff; }
+
+.Select-arrow {
+    border-color: var(--bs-light-bg-subtle) transparent transparent;
+}

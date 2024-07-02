@@ -11,6 +11,26 @@ register_page(__name__)
 
 default_dropdown_values = ["Paper", "Conference"]
 
+layout_options_style = {"width": "150px", 
+                        "margin-left": "auto", 
+                        'background-color':'#299FD6', 
+                        "border": "0px", 
+                        "border-radius":"5px"}
+
+layout_options= [
+                    {"label": "Breadthfirst", "value": "breadthfirst"},
+                    {"label": "Circle", "value": "circle"},
+                    {"label": "Cose", "value": "cose"}, 
+                    {"label": "Cose-bilkent", "value": "cose-bilkent"},
+                    {"label": "Cola", "value": "cola"},
+                    {"label": "Dagre", "value": "dagre"},
+                    {"label": "Euler", "value": "euler"},
+                    {"label": "Grid", "value": "grid"},
+                    {"label": "Klay", "value": "klay"},
+                    {"label": "Spread", "value": "spread"},
+                    {"label": "Random", "value": "random"}
+]
+
 # Create multi-mode graph elements
 multi_mode_nodes = [
     {"data": {"id": node, "label": node}, "classes": mode.lower()} 
@@ -21,7 +41,6 @@ multi_mode_nodes = [
 multi_mode_edges = [
     {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
 ]
-
 
 # Function to perform the n-mode to one-mode transformation
 def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
@@ -75,7 +94,20 @@ def layout():
                                 dbc.CardBody([
                                     html.Div(id="filter-mode-dummy-output"),
                                     html.Div(id="filter-mode-container", style={"width": "100%", "height": "500px"}),
-                                    dbc.Button("Download Image", id="filter-graph-download-btn", n_clicks=0),
+                                    dbc.Row([
+                                        dbc.Col([
+                                            dbc.Button("Download Image", id="filter-graph-download-btn", n_clicks=0),
+                                        ]),
+                                        dbc.Col([
+                                            dcc.Dropdown(
+                                                id="filter-layout-dropdown",
+                                                options=layout_options,
+                                                value="breadthfirst",
+                                                clearable=False,
+                                                style=layout_options_style
+                                            )
+                                        ])
+                                    ])
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
                         ]),
@@ -88,7 +120,20 @@ def layout():
                                 dbc.CardBody([
                                     html.Div(id="one-mode-dummy-output"),
                                     html.Div(id="one-mode-container", style={"width": "100%", "height": "500px"}),
-                                    dbc.Button("Download Image", id="one-graph-download-btn", n_clicks=0),
+                                    dbc.Row([
+                                        dbc.Col([
+                                            dbc.Button("Download Image", id="one-graph-download-btn", n_clicks=0),
+                                        ]),
+                                        dbc.Col([
+                                            dcc.Dropdown(
+                                                id="one-layout-dropdown",
+                                                options=layout_options,
+                                                value="cose",
+                                                clearable=False,
+                                                style=layout_options_style
+                                            )
+                                        ])
+                                    ])
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
                         ]),
@@ -103,7 +148,20 @@ def layout():
                                 dbc.CardBody([
                                     html.Div(id="multi-mode-dummy-output"),
                                     html.Div(id="multi-mode-container", style={"width": "100%", "height": "500px"}),
-                                    dbc.Button("Download Image", id="multi-graph-download-btn", n_clicks=0),
+                                    dbc.Row([
+                                        dbc.Col([
+                                            dbc.Button("Download Image", id="multi-graph-download-btn", n_clicks=0),
+                                        ]),
+                                        dbc.Col([
+                                            dcc.Dropdown(
+                                                id="multi-layout-dropdown",
+                                                options=layout_options,
+                                                value="breadthfirst",
+                                                clearable=False,
+                                                style=layout_options_style
+                                            )
+                                        ])
+                                    ])
                                 ])
                             ], style=card_style, outline=True, color="primary", className="ms-3"),
                         ]),
@@ -152,6 +210,35 @@ def layout():
                     ]),
                 ])
     return html.Div([nav_bar, content])
+
+@callback(
+    [Output("one-mode-nodes", "children"),
+    Output("one-mode-edges", "children"), 
+    Output("filter-mode-edges", "children"),
+    Output("filter-mode-nodes", "children")],
+    Input("mode-dropdown", "value")
+)
+def update_one_mode_graph_and_data(selected_modes):
+    one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
+
+    # Create JSON data for one-mode graph
+    one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2], "shared": edge[3]}} for edge in one_mode_edges]
+    one_mode_nodes_data = [{"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]]
+
+    # Create JSON data for filter-mode graph
+    filter_mode_nodes = [
+        {"data": {"id": node, "label": node}, "classes": mode.lower()} 
+        for mode, node_list in nodes.items() if mode in selected_modes + ["Author"]
+        for node in node_list
+    ]
+    filter_mode_edges = [
+        {"data": {"source": edge[0], "target": edge[1]}} 
+        for edge in edges 
+        if edge[0] in [node["data"]["id"] for node in filter_mode_nodes] 
+        and edge[1] in [node["data"]["id"] for node in filter_mode_nodes]
+    ]
+    return (json.dumps(one_mode_nodes_data, indent=2), json.dumps(one_mode_edges_data, indent=2), 
+            json.dumps(filter_mode_edges, indent=2), json.dumps(filter_mode_nodes, indent=2))
 
 with open('assets/multi_mode.js', 'r') as file:
     js_code = file.read()
@@ -220,31 +307,35 @@ clientside_callback(
     prevent_initial_call=True
 )
 
-@callback(
-    [Output("one-mode-nodes", "children"),
-    Output("one-mode-edges", "children"), 
-    Output("filter-mode-edges", "children"),
-    Output("filter-mode-nodes", "children")],
-    Input("mode-dropdown", "value")
+clientside_callback(
+    """
+    function(value) { 
+        cyFilter.layout({name: value}).run();
+    }
+    """,
+    Output("filter-mode-container", "children"),
+    Input("filter-layout-dropdown", "value"),
+    prevent_initial_call=True
 )
-def update_one_mode_graph_and_data(selected_modes):
-    one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
 
-    # Create JSON data for one-mode graph
-    one_mode_edges_data = [{"data": {"source": edge[0], "target": edge[1], "weight": edge[2], "shared": edge[3]}} for edge in one_mode_edges]
-    one_mode_nodes_data = [{"data": {"id": node, "label": node}, "classes": "author"} for node in nodes["Author"]]
+clientside_callback(
+    """
+    function(value) { 
+        cyOne.layout({name: value}).run();
+    }
+    """,
+    Output("one-mode-container", "children"),
+    Input("one-layout-dropdown", "value"),
+    prevent_initial_call=True
+)
 
-    # Create JSON data for filter-mode graph
-    filter_mode_nodes = [
-        {"data": {"id": node, "label": node}, "classes": mode.lower()} 
-        for mode, node_list in nodes.items() if mode in selected_modes + ["Author"]
-        for node in node_list
-    ]
-    filter_mode_edges = [
-        {"data": {"source": edge[0], "target": edge[1]}} 
-        for edge in edges 
-        if edge[0] in [node["data"]["id"] for node in filter_mode_nodes] 
-        and edge[1] in [node["data"]["id"] for node in filter_mode_nodes]
-    ]
-    return (json.dumps(one_mode_nodes_data, indent=2), json.dumps(one_mode_edges_data, indent=2), 
-            json.dumps(filter_mode_edges, indent=2), json.dumps(filter_mode_nodes, indent=2))
+clientside_callback(
+    """
+    function(value) { 
+        cyMulti.layout({name: value}).run();
+    }
+    """,
+    Output("multi-mode-container", "children"),
+    Input("multi-layout-dropdown", "value"),
+    prevent_initial_call=True
+)
