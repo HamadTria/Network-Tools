@@ -109,64 +109,76 @@ def layout():
         "margin": "1rem",
         "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
     }
-    return html.Div(
-    [   nav_bar,
-        dbc.Row([
-            dbc.Col(
-                dbc.Card(
-                    html.Div(
+    card_header_style = {
+        "fontSize": "1.5rem",
+        "fontWeight": "bold",
+        "color": "#FFFFFF",
+    }
+    content = dbc.Row([
+                dbc.CardHeader([
+                    html.Img(src="/assets/cytoscape.png",
+                            style={
+                                "height": "2rem",
+                                "marginRight": "10px"
+                            }),
+                            "Cytoscape"
+                ], className="text-center", style=card_header_style),
+                dbc.Col([
+                    dbc.Card([
+                        html.H3("Control panel", style={"textAlign": "center", 'border-radius': '5px'}),
+                        drc.NamedDropdown(
+                            name="Layout",
+                            id="dropdown-layout",
+                            options=drc.DropdownOptionsList(
+                                "random",
+                                "grid",
+                                "circle",
+                                "concentric",
+                                "breadthfirst",
+                                "cose",
+                                "cose-bilkent",
+                                "dagre",
+                                "cola",
+                                "klay",
+                                "spread",
+                                "euler",
+                            ),
+                            value="random",
+                            clearable=False,
+                            style = { 
+                                'background-color':'#299FD6', 
+                                "border": "0px", 
+                                "border-radius":"5px"
+                            }
+                        ),
+                        drc.NamedRadioItems(
+                            name="Expand",
+                            id="radio-expand",
+                            options=drc.DropdownOptionsList(
+                                "followers", "following"
+                            ),
+                            value="followers",
+                        ),
+                    ], style=card_style, outline=True, color="primary", className="ms-3"),
+                ]),
+                dbc.Col(
+                    dbc.Card(
+                        html.Div(
                             children=[
-                                html.H3("Control panel", style={"textAlign": "center", 'border-radius': '5px'}),
-                                drc.NamedDropdown(
-                                    name="Layout",
-                                    id="dropdown-layout",
-                                    options=drc.DropdownOptionsList(
-                                        "random",
-                                        "grid",
-                                        "circle",
-                                        "concentric",
-                                        "breadthfirst",
-                                        "cose",
-                                        "cose-bilkent",
-                                        "dagre",
-                                        "cola",
-                                        "klay",
-                                        "spread",
-                                        "euler",
-                                    ),
-                                    value="random",
-                                    clearable=False,
-                                ),
-                                drc.NamedRadioItems(
-                                    name="Expand",
-                                    id="radio-expand",
-                                    options=drc.DropdownOptionsList(
-                                        "followers", "following"
-                                    ),
-                                    value="followers",
-                                ),
-                            ]
-                    ),
-                style=card_style, outline=True, color="primary", className="ms-3")
-            ),
-            dbc.Col(
-                dbc.Card(
-                    html.Div(
-                        children=[
-                            cyto.Cytoscape(
-                                id="cytoscape",
-                                elements=cytoData.default_elements,
-                                stylesheet=default_stylesheet,
-                                style={"height": "1000px", "width": "100%"},
-                                contextMenu=context_menu,
-                            )
-                        ],
-                    ),
-                style=card_style, outline=True, color="primary", className="ms-3"),
-                width=8,
-            ),
+                                cyto.Cytoscape(
+                                    id="cytoscape",
+                                    elements=cytoData.default_elements,
+                                    stylesheet=default_stylesheet,
+                                    style={"height": "1000px", "width": "100%"},
+                                    contextMenu=context_menu,
+                                )
+                            ],
+                        ),
+                    style=card_style, outline=True, color="primary", className="ms-3"),
+                    width=8,
+                ),
         ])
-    ]
+    return html.Div([nav_bar, content]
 )
 
 

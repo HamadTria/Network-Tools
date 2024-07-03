@@ -9,28 +9,6 @@ import json
 
 register_page(__name__)
 
-default_dropdown_values = ["Paper", "Conference"]
-
-layout_options_style = {"width": "150px", 
-                        "margin-left": "auto", 
-                        'background-color':'#299FD6', 
-                        "border": "0px", 
-                        "border-radius":"5px"}
-
-layout_options= [
-                    {"label": "Breadthfirst", "value": "breadthfirst"},
-                    {"label": "Circle", "value": "circle"},
-                    {"label": "Cose", "value": "cose"}, 
-                    {"label": "Cose-bilkent", "value": "cose-bilkent"},
-                    {"label": "Cola", "value": "cola"},
-                    {"label": "Dagre", "value": "dagre"},
-                    {"label": "Euler", "value": "euler"},
-                    {"label": "Grid", "value": "grid"},
-                    {"label": "Klay", "value": "klay"},
-                    {"label": "Spread", "value": "spread"},
-                    {"label": "Random", "value": "random"}
-]
-
 # Create multi-mode graph elements
 multi_mode_nodes = [
     {"data": {"id": node, "label": node}, "classes": mode.lower()} 
@@ -74,14 +52,44 @@ def layout():
         "color": "#FFFFFF",
     }
 
+    layout_options_style = {"width": "150px", 
+                        "margin-left": "auto", 
+                        'background-color':'#299FD6', 
+                        "border": "0px", 
+                        "border-radius":"5px"}
+
+    default_dropdown_values = ["Paper", "Conference"]
+
+    layout_options= [
+                        {"label": "Breadthfirst", "value": "breadthfirst"},
+                        {"label": "Circle", "value": "circle"},
+                        {"label": "Cose", "value": "cose"}, 
+                        {"label": "Cose-bilkent", "value": "cose-bilkent"},
+                        {"label": "Cola", "value": "cola"},
+                        {"label": "Dagre", "value": "dagre"},
+                        {"label": "Grid", "value": "grid"},
+                        {"label": "Klay", "value": "klay"},
+                        {"label": "Spread", "value": "spread"},
+                        {"label": "Random", "value": "random"}
+    ]
+
     content = html.Div([
+                    dbc.CardHeader([
+                        html.Img(src="/assets/cytoscape.png",
+                                style={
+                                    "height": "2rem",
+                                    "marginRight": "10px"
+                                }),
+                                "Cytoscape"
+                    ], className="text-center", style=card_header_style),
                     html.Div([
                         html.Label("Select Modes to Consider:"),
                         dcc.Dropdown(
                                 id="mode-dropdown",
                                 options=[{"label": mode, "value": mode} for mode in nodes.keys() if mode != "Author"],
                                 value=default_dropdown_values,
-                                multi=True
+                                multi=True, 
+                                style= {'background-color':'#299FD6', "border": "0px", "border-radius":"5px"}
                             ),
                         ], className="ms-3", style={"width": "48%"}),
                         

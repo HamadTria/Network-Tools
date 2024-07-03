@@ -10,8 +10,24 @@ def layout():
         "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
         "width": "300px",
     }
+
+    card_header_style = {
+        "fontSize": "1.5rem",
+        "fontWeight": "bold",
+        "color": "#FFFFFF",
+    }
+
     nav_bar = navbar.draw_navbar()
+
     cyto_div = html.Div([
+                    dbc.CardHeader([
+                        html.Img(src="/assets/cytoscape.png",
+                                style={
+                                    "height": "2rem",
+                                    "marginRight": "10px"
+                                }),
+                                "Cytoscape"
+                    ], className="text-center", style=card_header_style),
                     html.Div(id="dummy-output-cyto"),
                     html.Div(id="cyto-container", style={"height": "700px"}),
                     dbc.Card([

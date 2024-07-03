@@ -15,7 +15,7 @@ def layout():
     card_style = {
         "margin": "1rem",
         "boxShadow": "0px 0px 15px rgba(0,0,0,0.2)",
-        "height": "1275px"
+        "height": "1350px"
     }
 
     card_header_style = {

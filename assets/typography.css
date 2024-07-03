@@ -3,3 +3,12 @@
 .Select-arrow {
     border-color: var(--bs-light-bg-subtle) transparent transparent;
 }
+
+.Select--multi .Select-value {
+    color: #ffffff;
+    border: 0px solid #ffffff;
+}
+
+.Select-clear {
+    color: #ffffff;
+}
