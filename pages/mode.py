@@ -20,22 +20,47 @@ multi_mode_edges = [
     {"data": {"source": edge[0], "target": edge[1]}} for edge in edges
 ]
 
-# Function to perform the n-mode to one-mode transformation
+# # Function to perform the n-mode to one-mode transformation
+# def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
+#     target_nodes = nodes[target_mode]
+#     other_nodes = {node for mode in other_modes for node in nodes[mode]}
+    
+#     one_mode_edges = []
+#     for i, node1 in enumerate(target_nodes):
+#         for j, node2 in enumerate(target_nodes):
+#             if i < j:
+#                 shared_neighbors = [
+#                     other_node for other_node in other_nodes 
+#                     if ((node1, other_node) in edges or (other_node, node1) in edges)
+#                     and ((node2, other_node) in edges or (other_node, node2) in edges)
+#                 ]
+#                 if shared_neighbors:
+#                     one_mode_edges.append((node1, node2, len(shared_neighbors), shared_neighbors))
+#     return one_mode_edges
+
 def n_mode_to_one_mode(nodes, edges, target_mode, other_modes):
+    from collections import defaultdict
+
     target_nodes = nodes[target_mode]
     other_nodes = {node for mode in other_modes for node in nodes[mode]}
+    adj_list = defaultdict(set)
+
+    for (node1, node2) in edges:
+        if node1 in target_nodes and node2 in other_nodes:
+            adj_list[node1].add(node2)
+        elif node2 in target_nodes and node1 in other_nodes:
+            adj_list[node2].add(node1)
     
     one_mode_edges = []
-    for i, node1 in enumerate(target_nodes):
-        for j, node2 in enumerate(target_nodes):
-            if i < j:
-                shared_neighbors = [
-                    other_node for other_node in other_nodes 
-                    if ((node1, other_node) in edges or (other_node, node1) in edges)
-                    and ((node2, other_node) in edges or (other_node, node2) in edges)
-                ]
-                if shared_neighbors:
-                    one_mode_edges.append((node1, node2, len(shared_neighbors), shared_neighbors))
+    n = len(target_nodes)
+    
+    for i in range(n):
+        for j in range(i + 1, n):
+            node1, node2 = target_nodes[i], target_nodes[j]
+            shared_neighbors = adj_list[node1] & adj_list[node2]
+            if shared_neighbors:
+                one_mode_edges.append((node1, node2, len(shared_neighbors), list(shared_neighbors)))
+    
     return one_mode_edges
 
 def layout():
@@ -226,7 +251,7 @@ def layout():
     Output("filter-mode-nodes", "children")],
     Input("mode-dropdown", "value")
 )
-def update_one_mode_graph_and_data(selected_modes):
+def update_data(selected_modes):
     one_mode_edges = n_mode_to_one_mode(nodes, edges, "Author", selected_modes)
 
     # Create JSON data for one-mode graph
