@@ -4,7 +4,7 @@ from dash import html, page_registry
 import os
 
 config = configparser.ConfigParser()
-config_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage M1/code/Network-Tools/data/config.ini')
+config_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage_M1/code/Network-Tools/data/config.ini')
 config.read(config_path)
 
 def draw_navbar():
