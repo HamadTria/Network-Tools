@@ -511,7 +511,7 @@ function initializeCytoscape() {
             }
         ];
 
-        // Apply core context menu to cyMulti and cyOne
+        // Apply core context menu to all graphs
         cyMulti.cxtmenu({
             selector: 'core',
             commands: coreContextMenuCommands

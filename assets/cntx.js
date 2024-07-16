@@ -18,7 +18,7 @@ function initializeCytoscape() {
             {
                 selector: 'edge',
                 css: {
-                    'curve-style': 'bezier', // bezier curve control point to show curvature
+                    'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle'
                 }
             },
@@ -84,6 +84,12 @@ function initializeCytoscape() {
         ],
         layout: {name: 'preset'},
         elements: cy.json().elements
+    });
+
+    // Disable user panning and node grabbing for small cytoscape instance
+    cySmall.userPanningEnabled(false);
+    cySmall.nodes().forEach(node => {
+        node.ungrabify();
     });
 
     cy.cxtmenu({

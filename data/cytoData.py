@@ -2,8 +2,23 @@ import os
 import math
 import pandas as pd
 
-csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage_M1/code/Network-Tools/data/EdgeList.csv')
-df = pd.read_csv(csv_path, sep=";", header = None)
+EdgeList_csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage_M1/code/Network-Tools/data/EdgeList.csv')
+NodeList_csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage_M1/code/Network-Tools/data/NodeList.csv')
+
+df = pd.read_csv(EdgeList_csv_path, sep=";", header=0)
+nodes_df = pd.read_csv(NodeList_csv_path, sep=";", header=0)
+
+# Merge node types for source nodes
+df = df.merge(nodes_df[['_nodeID', 'viewIcon']], left_on='_sourceID', right_on='_nodeID', how='left')
+df.rename(columns={'viewIcon': 'source_type'}, inplace=True)
+df.drop(columns=['_nodeID'], inplace=True)
+
+# Merge node types for target nodes
+df = df.merge(nodes_df[['_nodeID', 'viewIcon']], left_on='_targetID', right_on='_nodeID', how='left')
+df.rename(columns={'viewIcon': 'target_type'}, inplace=True)
+df.drop(columns=['_nodeID'], inplace=True)
+
+node_types = nodes_df['viewIcon'].unique()
 
 nodes = set()
 
@@ -14,17 +29,22 @@ followers_node_di = {}
 followers_edges_di = {}
 
 cy_nodes = []
+cy_edges = []
 
 for i in range(1, len(df)):
     row = df.iloc[i]
-    source = row[0]
-    target = row[1]
-    weight = row[3] if not math.isnan(float(row[3])) else '1'
+    source = row.iloc[0]
+    target = row.iloc[1]
+    weight = row.iloc[3] if not math.isnan(float(row.iloc[3])) else '1'
+    source_type = row.iloc[4]
+    target_type = row.iloc[5]
 
-    cy_edge = {"data": {"id": source + target, "source": source, "target": target, "weight": weight}}
-    cy_target = {"data": {"id": target, "label": "User #" + str(target)}}
-    cy_source = {"data": {"id": source, "label": "User #" + str(source)}}
+    cy_edge = {"data": {"id": source + target, "source": source, "target": target, "weight": weight, "source_type": source_type, "target_type": target_type}}
+    cy_target = {"data": {"id": target, "label": "User #" + str(target)}, "classes": target_type}
+    cy_source = {"data": {"id": source, "label": "User #" + str(source)}, "classes": source_type}
+    cy_edges.append(cy_edge)
 
+    ############## Data wrangling for cytoscape page ##############
     if source not in nodes:
         nodes.add(source)
         cy_nodes.append(cy_source)

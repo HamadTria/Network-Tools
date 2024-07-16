@@ -11,7 +11,10 @@ app = Dash(__name__,
            use_pages=True,
            suppress_callback_exceptions=True,
            external_stylesheets=[dbc.themes.CYBORG],
-           external_scripts=[config['Sigma']['script'], config['Cytoscape']['script'], config['Chroma']['script']],
+           external_scripts=[config['Sigma']['script'], 
+                             config['Cytoscape']['script'], 
+                             config['Cytoscape']['jquery'],
+                             config['Cytoscape']['qtip']],
            title=config['General']['title'])
 
 

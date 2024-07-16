@@ -11,30 +11,6 @@ cyto.load_extra_layouts()
 
 register_page(__name__)
 
-context_menu = [
-    {
-        "id": "add-node",
-        "label": "Add Node",
-        "tooltipText": "Add Node",
-        "availableOn": ["canvas"],
-        "onClick": "add_node",
-    },
-    {
-        "id": "remove",
-        "label": "Remove",
-        "tooltipText": "Remove",
-        "availableOn": ["node", "edge"],
-        "onClick": "remove",
-    },
-    {
-        "id": "add-edge",
-        "label": "Add Edge",
-        "tooltipText": "add edge",
-        "availableOn": ["node"],
-        "onClick": "add_edge",
-    },
-]
-
 default_stylesheet = [
     {   
         "selector": "node", 
@@ -170,7 +146,6 @@ def layout():
                                     elements=cytoData.default_elements,
                                     stylesheet=default_stylesheet,
                                     style={"height": "1000px", "width": "100%"},
-                                    contextMenu=context_menu,
                                 )
                             ],
                         ),

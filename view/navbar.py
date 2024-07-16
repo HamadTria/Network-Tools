@@ -31,6 +31,7 @@ def draw_navbar():
                             dbc.DropdownMenuItem(divider=True),
                             dbc.DropdownMenuItem("Context-menu", href=page_registry['pages.cntx']['path']),
                             dbc.DropdownMenuItem("Mode transformation", href=page_registry['pages.mode']['path']),
+                            dbc.DropdownMenuItem("Big Data Network", href=page_registry['pages.bigdata']['path']),
                         ], 
                         label="Menu", className="ms-auto me-3", align_end=True)
             )],
