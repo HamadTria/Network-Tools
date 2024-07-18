@@ -2,8 +2,8 @@ import os
 import math
 import pandas as pd
 
-EdgeList_csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage_M1/code/Network-Tools/data/EdgeList.csv')
-NodeList_csv_path = os.path.abspath('/Users/hamadtria/Documents/CMI_Cours_M1/stage_M1/code/Network-Tools/data/NodeList.csv')
+EdgeList_csv_path = os.path.abspath('data/EdgeList.csv')
+NodeList_csv_path = os.path.abspath('data/NodeList.csv')
 
 df = pd.read_csv(EdgeList_csv_path, sep=";", header=0)
 nodes_df = pd.read_csv(NodeList_csv_path, sep=";", header=0)
