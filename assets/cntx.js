@@ -92,6 +92,7 @@ function initializeCytoscape() {
         node.ungrabify();
     });
 
+    // Add context menus for nodes and edges
     cy.cxtmenu({
         selector: 'node, edge',
         commands: [
@@ -177,6 +178,7 @@ function initializeCytoscape() {
         ]
     });
 
+    // Add context menu for core
     cy.cxtmenu({
         selector: 'core',
         commands: [

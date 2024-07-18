@@ -1,4 +1,5 @@
 function initializeCytoscape() {
+    // Delay graph to wait for dropdown menu callback
     setTimeout(function() {
 
         let start = Date.now();
@@ -130,6 +131,7 @@ function initializeCytoscape() {
             node.data('originalColor', node.style('background-color'));
         });
 
+        // Nodes Context menu
         const contextMenuCommands = [
             {
                 content: 'change size',
@@ -220,6 +222,7 @@ function initializeCytoscape() {
             commands: coreContextMenuCommands
         });
 
+        // Apply qtip to nodes
         cyBigdata.elements().qtip({
             content: function(){ return 'ID: ' + this.id() },
             position: {

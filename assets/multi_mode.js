@@ -351,7 +351,7 @@ function initializeCytoscape() {
         syncNodeAndEdgeSelection(cyMulti, cyOne);
         syncNodeAndEdgeSelection(cyMulti, cyFilter);
 
-        // Define context menu commands
+        // Define context menu commands for nodes
         const contextMenuCommands = [
             {
                 content: 'change size',
@@ -462,7 +462,7 @@ function initializeCytoscape() {
             }
         ];
 
-        // Apply context menu to all graphs
+        // Apply nodes context menu to all graphs
         cyMulti.cxtmenu({
             selector: 'node',
             commands: contextMenuCommands
@@ -527,6 +527,7 @@ function initializeCytoscape() {
             commands: coreContextMenuCommands
         });
 
+        // Define context menu commands for edges
         const edgesContextMenuCommands = [
             {
                 content: 'straighten edge',
@@ -558,7 +559,7 @@ function initializeCytoscape() {
             }            
         ];
 
-        // Apply context menu to all graphs
+        // Apply edges context menu to all graphs
         cyMulti.cxtmenu({
             selector: 'edge',
             commands: edgesContextMenuCommands

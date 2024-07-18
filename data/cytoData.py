@@ -39,6 +39,7 @@ for i in range(1, len(df)):
     source_type = row.iloc[4]
     target_type = row.iloc[5]
 
+    ############## Data wrangling for Big Data Network page ##############
     cy_edge = {"data": {"id": source + target, "source": source, "target": target, "weight": weight, "source_type": source_type, "target_type": target_type}}
     cy_target = {"data": {"id": target, "label": "User #" + str(target)}, "classes": target_type}
     cy_source = {"data": {"id": source, "label": "User #" + str(source)}, "classes": source_type}

@@ -7,6 +7,12 @@ from view import dash_reusable_components as drc
 import dash_mantine_components as dmc
 from view import navbar
 from data import cytoData
+import os
+import configparser
+
+config = configparser.ConfigParser()
+config_path = os.path.abspath('data/config.ini')
+config.read(config_path)
 
 cyto.load_extra_layouts()
 
@@ -59,7 +65,7 @@ def layout():
             dbc.CardBody([
                 html.Div(id="bigdata-dummy-output"),
                 html.Div(id="bigdata-container", style={"width": "100%", "height": "1000px"}),
-                html.Link(rel="stylesheet", type="text/css", href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.css"),
+                html.Link(rel="stylesheet", type="text/css", href=config['Cytoscape']['qtip_css']),
                 dbc.Row([
                     dbc.Col([
                         dbc.Button("Download Image", id="bigdata-download-btn", n_clicks=0),
