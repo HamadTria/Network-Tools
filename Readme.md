@@ -1,6 +1,6 @@
 # Graph Visualization Tools
 
-Welcome to the Graph Visualization Tools repository. This project provides an interactive web application for visualizing and analyzing complex multimodal networks using Dash and Cytoscape.js. The application includes several pages, each offering unique features to help users explore and understand their network data.
+Welcome to the Graph Visualization Tools repository. This project provides an interactive web application for visualizing and analyzing complex multimodal networks using Dash and Cytoscape.js. The application includes several pages, each offering unique features to help users explore network data.
 
 ## Table of Contents
 
