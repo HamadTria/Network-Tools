@@ -44,8 +44,8 @@ To run this application locally, follow these steps:
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/graph-visualization-tools.git
-    cd graph-visualization-tools
+    git clone https://github.com/HamadTria/Network-Tools.git
+    cd Network-Tools
     ```
 
 2. **Install the required dependencies**:
