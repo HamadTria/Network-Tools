@@ -84,7 +84,7 @@ To run this application locally, follow these steps:
 
 ## Contributing
 
-We welcome contributions to this project! If you have any ideas, bug reports, or pull requests, please feel free to contribute.
+Contributions to this project are welcome! If you have any ideas, bug reports, or pull requests, please feel free to contribute.
 
 1. Fork the repository.
 2. Create a new branch: `git checkout -b feature/your-feature-name`.
