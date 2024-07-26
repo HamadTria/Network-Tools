@@ -2,17 +2,13 @@
 
 Welcome to the Graph Visualization Tools repository. This project provides an interactive web application for visualizing and analyzing complex multimodal networks using Dash and Cytoscape.js. The application includes several pages, each offering unique features to help users explore network data.
 
-## Table of Contents
+## Screenshots
 
-- [User Guide](#user-guide)
-- [Features](#features)
-  - [Multimode Page](#multimode-page)
-  - [Big Data Network Page](#big-data-network-page)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [License](#license)
+### Multimode Page
+![Multimode Screenshot](assets/screenshot1.png)
+
+### Big Data Network Graph Page
+![Big Data Network Graph Screenshot](assets/screenshot2.png)
 
 ## User Guide
 
@@ -73,14 +69,6 @@ To run this application locally, follow these steps:
   - Interact with nodes using the context menu options.
   - Download the graph as an image using the "Download Image" button.
   - View detailed information about nodes and edges in the scrollable data view.
-
-## Screenshots
-
-### Multimode Page
-![Multimode Screenshot](assets/screenshot1.png)
-
-### Big Data Network Graph Page
-![Big Data Network Graph Screenshot](assets/screenshot2.png)
 
 ## Contributing
 
