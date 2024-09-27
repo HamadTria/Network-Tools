@@ -17,6 +17,8 @@ app = Dash(__name__,
                              config['Cytoscape']['qtip']],
            title=config['General']['title'])
 
+server = app.server
+
 
 app.layout = html.Div(
     style={'backgroundColor': str(config['Colors']['background'])},
